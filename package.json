@@ -1,5 +1,5 @@
 {
-  "name": "command-server",
+	"name": "command-server",
 	"displayName": "Command server",
 	"description": "Accept commands on an HTTP server",
 	"version": "0.0.1",
@@ -10,7 +10,7 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:command-server.helloWorld"
+		"*"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
