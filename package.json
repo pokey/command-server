@@ -2,7 +2,13 @@
 	"name": "command-server",
 	"displayName": "Command server",
 	"description": "Accept commands on an HTTP server",
-	"version": "0.0.1",
+	"publisher": "pokey",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/pokey/command-server"
+	},
+	"version": "0.1.0",
 	"engines": {
 		"vscode": "^1.53.0"
 	},
@@ -13,14 +19,7 @@
 		"*"
 	],
 	"main": "./out/extension.js",
-	"contributes": {
-		"commands": [
-			{
-				"command": "command-server.helloWorld",
-				"title": "Hello World"
-			}
-		]
-	},
+	"contributes": {},
 	"scripts": {
 		"vscode:prepublish": "yarn run compile",
 		"compile": "tsc -p ./",
