@@ -52,18 +52,18 @@ export function activate(context: vscode.ExtensionContext) {
     port = address.port;
     console.log("Listening on port " + address.port);
     if (vscode.window.state.focused) {
-      writeHost();
+      writePort();
     }
   });
 
   vscode.window.onDidChangeWindowState((event) => {
     if (event.focused && port !== null) {
-      writeHost();
+      writePort();
     }
   });
 
-  function writeHost() {
-    writeFileSync("/tmp/vscode-host", `localhost:${port}`);
+  function writePort() {
+    writeFileSync("/tmp/vscode-port", `${port}`);
   }
 }
 
