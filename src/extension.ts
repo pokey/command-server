@@ -52,18 +52,30 @@ export function activate(context: vscode.ExtensionContext) {
     port = address.port;
     console.log("Listening on port " + address.port);
     if (vscode.window.state.focused) {
-      writeHost();
+      writeEditorInfo();
     }
   });
 
-  vscode.window.onDidChangeWindowState((event) => {
-    if (event.focused && port !== null) {
-      writeHost();
+  const windowStateDisposable = vscode.window.onDidChangeWindowState(
+    (event) => {
+      if (event.focused && port !== null) {
+        writeEditorInfo();
+      }
     }
-  });
+  );
 
-  function writeHost() {
-    writeFileSync("/tmp/vscode-host", `localhost:${port}`);
+  const activeEditorDisposable = vscode.window.onDidChangeActiveTextEditor(
+    writeEditorInfo
+  );
+
+  context.subscriptions.push(windowStateDisposable, activeEditorDisposable);
+
+  function writeEditorInfo() {
+    writeFileSync("/tmp/vscode-port", `${port}`);
+    const editorInfo = {
+      activeLanguage: vscode.window.activeTextEditor?.document.languageId,
+    };
+    writeFileSync("/tmp/vscode-active-editor-info", JSON.stringify(editorInfo));
   }
 }
 
