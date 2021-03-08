@@ -65,7 +65,7 @@ export function activate(context: vscode.ExtensionContext) {
   });
 
   function writePort() {
-    var path = join(tmpdir(), "vscode-port");
+    const path = join(tmpdir(), "vscode-port");
     writeFileSync(path, `${port}`);
   }
 }
