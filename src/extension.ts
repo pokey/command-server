@@ -4,6 +4,8 @@ import * as vscode from "vscode";
 import * as http from "http";
 import { AddressInfo } from "net";
 import { writeFileSync } from "fs";
+import { tmpdir } from "os";
+import { join } from "path";
 
 interface Command {
   commandId: string;
@@ -63,7 +65,8 @@ export function activate(context: vscode.ExtensionContext) {
   });
 
   function writePort() {
-    writeFileSync("/tmp/vscode-port", `${port}`);
+    const path = join(tmpdir(), "vscode-port");
+    writeFileSync(path, `${port}`);
   }
 }
 
