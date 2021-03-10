@@ -62,7 +62,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   function writePort() {
     const path = join(tmpdir(), "vscode-port");
-    console.log(`Saved port ${port} to path ${path}`);
+    console.log(`Saving port ${port} to path ${path}`);
     writeFileSync(path, `${port}`);
   }
 
