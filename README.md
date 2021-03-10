@@ -14,9 +14,11 @@ POST /execute-command HTTP/1.1
 {
   "commandId": "some-command-id",
   "args": [
-    "default"
+    "some-argument"
   ]
 }
 ```
+
+Upon receiving the above, this extension would run the command `some-command-id` with argument `"some-argument"`.
 
 ## Release Notes

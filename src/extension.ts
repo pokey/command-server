@@ -6,21 +6,12 @@ import { AddressInfo } from "net";
 import { writeFileSync } from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
+import { getRequestJSON } from "./getRequestJSON";
 
 interface Command {
   commandId: string;
   args: any[];
   expectResponse: boolean;
-}
-
-function getBody(req: http.IncomingMessage) {
-  return new Promise<any>((resolve, reject) => {
-    var body = "";
-    req.on("data", function (chunk) {
-      body += chunk;
-    });
-    req.on("end", () => resolve(JSON.parse(body)));
-  });
 }
 
 export function activate(context: vscode.ExtensionContext) {
@@ -33,7 +24,7 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
 
-    const commandInfo: Command = await getBody(req);
+    const commandInfo: Command = await getRequestJSON(req);
 
     vscode.commands.executeCommand(commandInfo.commandId, ...commandInfo.args);
 
