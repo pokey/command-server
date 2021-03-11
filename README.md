@@ -1,6 +1,6 @@
 # command-server README
 
-Creates an http server listening for commands to execute. 
+Creates an http server that exposes a REST api to execute commands. 
 
 ## Features
 

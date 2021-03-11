@@ -1,7 +1,7 @@
 {
 	"name": "command-server",
 	"displayName": "Command server",
-	"description": "Accept commands on an HTTP server",
+	"description": "Exposes an HTTP REST api for command execution",
 	"publisher": "pokey",
 	"license": "MIT",
 	"repository": {
