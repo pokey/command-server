@@ -57,6 +57,16 @@ export function activate(context: vscode.ExtensionContext) {
     writeFileSync(path, `${port}`);
   }
 
+  vscode.commands.registerCommand("helloWorld", async () => {
+    const commands = await vscode.commands.getCommands();
+    // writeFileSync(
+    //   "/Users/pokey/src/command-server/commands.txt",
+    //   commands.join("\n")
+    // );
+    console.log(
+      await vscode.commands.executeCommand("getContextKeyInfo", "terminalFocus")
+    );
+  });
   context.subscriptions.push(windowStateDisposable, {
     dispose() {
       server.close();
