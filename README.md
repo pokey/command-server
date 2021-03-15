@@ -26,6 +26,12 @@ POST /execute-command HTTP/1.1
 Upon receiving the above, this extension would run the command
 `some-command-id` with argument `"some-argument"`.
 
+If you'd like the server to wait for the command to finish before responding,
+pass `waitForFinish=true`.
+
+If you'd like the server to wait for the command to finish and then respond
+with the command return value encoded as JSON, pass `expectResponse=true`.
+
 Note that the server is bound to `localhost`, so it will only accept commands
 from processes running on the same host as VSCode.
 
