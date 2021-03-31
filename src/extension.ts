@@ -58,17 +58,6 @@ export function activate(context: vscode.ExtensionContext) {
     }
   });
 
-  setInterval(() => {
-    const path = getPortPath();
-
-    if (
-      vscode.window.state.focused &&
-      (!existsSync(path) || parseInt(readFileSync(path).toString()) !== port)
-    ) {
-      writePort();
-    }
-  }, 500);
-
   const windowStateDisposable = vscode.window.onDidChangeWindowState(
     (event) => {
       if (event.focused && port !== null) {
@@ -77,13 +66,32 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  // We keep a monotonically increasing write counter so that the port file is
+  // guaranteed to change every time we write to it.  This way a client can use
+  // the `command-server.writePort` command to request us to update the port
+  // file, and then wait for it to change.
+  var fileWriteCounter = 0;
+
   function writePort() {
     const path = getPortPath();
     console.log(`Saving port ${port} to path ${path}`);
-    writeFileSync(path, `${port}`);
+
+    const portInfo = {
+      port,
+      fileWriteCounter,
+    };
+
+    fileWriteCounter++;
+
+    writeFileSync(path, JSON.stringify(portInfo));
   }
 
-  context.subscriptions.push(windowStateDisposable, {
+  let disposable = vscode.commands.registerCommand(
+    "command-server.writePort",
+    writePort
+  );
+
+  context.subscriptions.push(disposable, windowStateDisposable, {
     dispose() {
       server.close();
     },

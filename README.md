@@ -44,7 +44,8 @@ from tempfile import gettempdir
 
 
 port_file_path = Path(gettempdir()) / "vscode-port"
-port = port_file_path.read_text()
+contents = json.loads(port_file_path.read_text())
+port = contents["port"]
 
 response = requests.post(
     f"http://localhost:{port}/execute-command",
@@ -55,6 +56,50 @@ response = requests.post(
     timeout=(0.05, 3.05),
 )
 response.raise_for_status()
+```
+
+## Troubleshooting
+
+If you're running into issues with commands interleaving with keystrokes, or the extension not responding, the server supports a command `command-server.writePort`, which will cause the extension to update the port and write a monotonically increasing counter variable to the port file.  You can run this command (via keyboard shortcut) and then wait for the file to update to ensure you're talking to the right vscode instance and to ensure that the command will not interleave with other keyboard shortcuts issued to VSCode.
+
+Here's some example code for this mode of operation. Note that this assumes
+that you have a function `actions.key` that presses the given key (eg
+[talon](https://talonvoice.com/)):
+
+```py
+    port_file_path = Path(gettempdir()) / "vscode-port"
+    original_contents = port_file_path.read_text()
+
+    # Issue command to VSCode telling it to update the port file.  Because only
+    # the active VSCode instance will accept keypresses, we can be sure that
+    # the active VSCode instance will be the one to write the port.
+    if is_mac:
+        actions.key("cmd-shift-alt-p")
+    else:
+        actions.key("ctrl-shift-alt-p")
+
+    # Wait for the VSCode instance to update the port file.  This generally
+    # happens within the first millisecond, but we give it 3 seconds just in
+    # case.
+    start_time = time.monotonic()
+    new_contents = port_file_path.read_text()
+    while original_contents == new_contents:
+        time.sleep(0.001)
+        if time.monotonic() - start_time > 3.0:
+            raise Exception("Timed out waiting for VSCode to update port file")
+        new_contents = port_file_path.read_text()
+
+    port = json.loads(new_contents)["port"]
+
+    response = requests.post(
+        f"http://localhost:{port}/execute-command",
+        json={
+            "commandId": "some-command-id",
+            "args": ["some-argument"],
+        },
+        timeout=(0.05, 3.05),
+    )
+    response.raise_for_status()
 ```
 
 ## Known issues

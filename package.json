@@ -8,7 +8,7 @@
 		"type": "git",
 		"url": "https://github.com/pokey/command-server"
 	},
-	"version": "0.2.2",
+	"version": "0.3.2",
 	"engines": {
 		"vscode": "^1.53.0"
 	},
@@ -19,7 +19,21 @@
 		"*"
 	],
 	"main": "./out/extension.js",
-	"contributes": {},
+	"contributes": {
+		"commands": [
+			{
+				"command": "command-server.writePort",
+				"title": "Write port to file"
+			}
+		],
+		"keybindings": [
+			{
+				"command": "command-server.writePort",
+				"key": "ctrl+shift+alt+p",
+				"mac": "cmd+shift+alt+p"
+			}
+		]
+	},
 	"scripts": {
 		"vscode:prepublish": "yarn run compile",
 		"compile": "tsc -p ./",
