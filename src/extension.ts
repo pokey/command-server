@@ -7,16 +7,19 @@ import { existsSync, readFileSync, writeFileSync } from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
 import { getRequestJSON } from "./getRequestJSON";
+import { randomBytes } from "crypto";
 
 interface Command {
   commandId: string;
   args: any[];
   expectResponse: boolean;
   waitForFinish: boolean;
+  nonce: string;
 }
 
 export function activate(context: vscode.ExtensionContext) {
   var port: number | null = null;
+  const nonce = randomBytes(10).toString("hex");
 
   const server = http.createServer(async function (req, res) {
     if (!vscode.window.state.focused) {
@@ -26,6 +29,12 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     const commandInfo: Command = await getRequestJSON(req);
+
+    if (commandInfo.nonce !== nonce) {
+      res.writeHead(403);
+      res.end("Please provide nonce");
+      return;
+    }
 
     const commandPromise = vscode.commands.executeCommand(
       commandInfo.commandId,
@@ -48,7 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
   });
 
   server.listen(0, "localhost", function () {
-    const address: AddressInfo = (server.address() as unknown) as AddressInfo;
+    const address: AddressInfo = server.address() as unknown as AddressInfo;
     port = address.port;
 
     console.log("Listening on port " + address.port);
@@ -79,6 +88,7 @@ export function activate(context: vscode.ExtensionContext) {
     const portInfo = {
       port,
       fileWriteCounter,
+      nonce,
     };
 
     fileWriteCounter++;

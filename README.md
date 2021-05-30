@@ -117,3 +117,6 @@ response.raise_for_status()
   editor window until everything is fully loaded.
 
 ## Release Notes
+
+### 0.4.0
+- Add nonce for security
