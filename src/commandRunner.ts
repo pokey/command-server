@@ -36,8 +36,11 @@ export default class CommandRunner {
   }
 
   /**
-   * Reads a command from the request file and executes it.  Writes the result of
-   * the command to the response file, if requested.
+   * Reads a command from the request file and executes it.  Writes information
+   * about command execution to the result of the command to the response file,
+   * If requested, will wait for command to finish, and can also write command
+   * output to response file.  See also documentation for Request / Response
+   * types.
    */
   async runCommand() {
     const { commandId, args, uuid, returnCommandOutput, waitForFinish } =
