@@ -61,7 +61,7 @@ response.raise_for_status()
 
 ## Troubleshooting
 
-If you're running into issues with commands interleaving with keystrokes, or the extension not responding, the server supports a command `command-server.writePort`, which will cause the extension to update the port and write a monotonically increasing counter variable to the port file.  You can run this command (via keyboard shortcut) and then wait for the file to update to ensure you're talking to the right vscode instance and to ensure that the command will not interleave with other keyboard shortcuts issued to VSCode.
+If you're running into issues with commands interleaving with keystrokes, or the extension not responding, the server supports a command `command-server.runCommand`, which will cause the extension to update the port and write a monotonically increasing counter variable to the port file.  You can run this command (via keyboard shortcut) and then wait for the file to update to ensure you're talking to the right vscode instance and to ensure that the command will not interleave with other keyboard shortcuts issued to VSCode.
 
 Here's some example code for this mode of operation. Note that this assumes
 that you have a function `actions.key` that presses the given key (eg
