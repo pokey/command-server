@@ -71,13 +71,13 @@ export default class CommandRunner {
 
       await writeResponse({
         error: null,
-        uuid: uuid,
+        uuid,
         returnValue: commandReturnValue,
       });
     } catch (err) {
       await writeResponse({
         error: err.message,
-        uuid: uuid,
+        uuid,
       });
     }
   }
