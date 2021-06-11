@@ -12,7 +12,7 @@ export async function writeJSONExclusive(path: string, body: any) {
 }
 
 /**
- * Unlike the given file if it exists, otherwise do nothing
+ * Unlink the given file if it exists, otherwise do nothing
  * @param path The path to unlink
  */
 export function unlinkIfExistsSync(path: string) {
