@@ -43,34 +43,19 @@ export default class CommandRunner {
     const { commandId, args, uuid, returnCommandOutput, waitForFinish } =
       await readRequest();
 
-    if (!vscode.window.state.focused) {
-      await writeResponse({
-        error: "This editor is not active",
-        uuid,
-      });
-
-      return;
-    }
-
-    if (!commandId.match(this.allowRegex)) {
-      await writeResponse({
-        error: "Command not in allowList",
-        uuid,
-      });
-
-      return;
-    }
-
-    if (this.denyRegex != null && commandId.match(this.denyRegex)) {
-      await writeResponse({
-        error: "Command in denyList",
-        uuid,
-      });
-
-      return;
-    }
-
     try {
+      if (!vscode.window.state.focused) {
+        throw new Error("This editor is not active");
+      }
+
+      if (!commandId.match(this.allowRegex)) {
+        throw new Error("Command not in allowList");
+      }
+
+      if (this.denyRegex != null && commandId.match(this.denyRegex)) {
+        throw new Error("Command in denyList");
+      }
+
       const commandPromise = vscode.commands.executeCommand(commandId, ...args);
 
       var commandReturnValue = null;
