@@ -1,7 +1,7 @@
 # command-server README
 
 Adds support for running arbitrary commands via file-based RPC.  Designed for
-use with voice control systems such as [Talon](https://talonvoice.com/).
+use with voice-control systems such as [Talon](https://talonvoice.com/).
 
 ## Features
 
@@ -86,4 +86,4 @@ Defaults to `[]` (doesn't deny anything).
 ## Release Notes
 
 ### 0.4.0
-- Add nonce for security
+- Switch to file-based RPC
