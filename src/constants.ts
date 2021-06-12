@@ -1,1 +1,1 @@
-export const STALE_TIMEOUT = 20000;
+export const STALE_TIMEOUT_MS = 20000;

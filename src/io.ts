@@ -1,5 +1,5 @@
 import { readFile, stat, unlink } from "fs/promises";
-import { STALE_TIMEOUT } from "./constants";
+import { STALE_TIMEOUT_MS } from "./constants";
 import { getRequestPath, getResponsePath } from "./paths";
 import { Request, Response } from "./types";
 import { writeJSONExclusive } from "./fileUtils";
@@ -37,7 +37,7 @@ export async function writeResponse(response: Response) {
     try {
       const stats = await stat(responsePath);
 
-      if (Math.abs(stats.mtimeMs - new Date().getTime()) < STALE_TIMEOUT) {
+      if (Math.abs(stats.mtimeMs - new Date().getTime()) < STALE_TIMEOUT_MS) {
         throw new Error("Another process has an active response file");
       }
 
