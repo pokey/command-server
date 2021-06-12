@@ -34,14 +34,22 @@ export async function writeResponse(response: Response) {
       throw err;
     }
 
-    const stats = await stat(responsePath);
+    try {
+      const stats = await stat(responsePath);
 
-    if (Math.abs(stats.mtimeMs - new Date().getTime()) < STALE_TIMEOUT) {
-      throw new Error("Another process has an active response file");
-    } else {
+      if (Math.abs(stats.mtimeMs - new Date().getTime()) < STALE_TIMEOUT) {
+        throw new Error("Another process has an active response file");
+      }
+
       console.log("Removing stale response file");
       await unlink(responsePath);
-      await writeJSONExclusive(responsePath, response);
+    } catch (err) {
+      // If the file was removed for whatever reason in the interim we just continue
+      if (err.code !== "ENOENT") {
+        throw err;
+      }
     }
+
+    await writeJSONExclusive(responsePath, response);
   }
 }

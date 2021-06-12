@@ -10,7 +10,9 @@ On startup, creates a directory in the default tmp directory, called
 waits for the `command-server.runCommand` command to be issued, which will
 trigger the command server to read the `request.json` file in the communication
 directory, execute the command requested there, and write the response to
-`response.json`.  
+`response.json`.  Note that we write the JSON response on a single line, with a
+trailing newline, so that the client can repeatedly try to read the file until
+it finds a final newline to indicate that the write is complete.
 
 Requests look as follows:
 ```json
