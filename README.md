@@ -14,6 +14,8 @@ directory, execute the command requested there, and write the response to
 trailing newline, so that the client can repeatedly try to read the file until
 it finds a final newline to indicate that the write is complete.
 
+Note that the command server will refuse to execute a command if the request file is older than 3 seconds.
+
 Requests look as follows:
 ```json
 {

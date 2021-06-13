@@ -1,5 +1,5 @@
 import { readFile, stat, unlink } from "fs/promises";
-import { STALE_TIMEOUT_MS } from "./constants";
+import { STALE_TIMEOUT_MS, VSCODE_COMMAND_TIMEOUT_MS } from "./constants";
 import { getRequestPath, getResponsePath } from "./paths";
 import { Request, Response } from "./types";
 import { writeJSONExclusive } from "./fileUtils";
@@ -11,8 +11,18 @@ import { writeJSONExclusive } from "./fileUtils";
  */
 export async function readRequest(): Promise<Request> {
   const requestPath = getRequestPath();
+
   const request = JSON.parse(await readFile(requestPath, "utf-8"));
   await unlink(requestPath);
+
+  const stats = await stat(requestPath);
+  if (
+    Math.abs(stats.mtimeMs - new Date().getTime()) > VSCODE_COMMAND_TIMEOUT_MS
+  ) {
+    throw new Error(
+      "Request file is older than timeout; refusing to execute command"
+    );
+  }
 
   return request;
 }
