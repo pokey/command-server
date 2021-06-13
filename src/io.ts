@@ -12,10 +12,11 @@ import { writeJSONExclusive } from "./fileUtils";
 export async function readRequest(): Promise<Request> {
   const requestPath = getRequestPath();
 
+  const stats = await stat(requestPath);
   const request = JSON.parse(await readFile(requestPath, "utf-8"));
+
   await unlink(requestPath);
 
-  const stats = await stat(requestPath);
   if (
     Math.abs(stats.mtimeMs - new Date().getTime()) > VSCODE_COMMAND_TIMEOUT_MS
   ) {

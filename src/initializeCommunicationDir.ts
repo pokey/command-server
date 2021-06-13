@@ -20,7 +20,8 @@ export function initializeCommunicationDir() {
     !stats.isDirectory() ||
     stats.isSymbolicLink() ||
     stats.mode & S_IWOTH ||
-    stats.uid !== getuid()
+    // On Windows, this won't be a function, so we don't worry about it
+    (typeof getuid === "function" && stats.uid !== getuid())
   ) {
     throw new Error(
       `Refusing to proceed because of invalid communication dir ${communicationDirPath}`
