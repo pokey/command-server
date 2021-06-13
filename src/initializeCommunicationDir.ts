@@ -7,6 +7,7 @@ import {
   getCommunicationDirPath,
 } from "./paths";
 import { unlinkIfExistsSync } from "./fileUtils";
+import { userInfo } from "os";
 
 export function initializeCommunicationDir() {
   const communicationDirPath = getCommunicationDirPath();
@@ -16,12 +17,14 @@ export function initializeCommunicationDir() {
 
   const stats = lstatSync(communicationDirPath);
 
+  const info = userInfo();
+
   if (
     !stats.isDirectory() ||
     stats.isSymbolicLink() ||
     stats.mode & S_IWOTH ||
-    // On Windows, this won't be a function, so we don't worry about it
-    (typeof getuid === "function" && stats.uid !== getuid())
+    // On Windows, uid < 0, so we don't worry about it for simplicity
+    (info.uid >= 0 && stats.uid !== info.uid)
   ) {
     throw new Error(
       `Refusing to proceed because of invalid communication dir ${communicationDirPath}`
