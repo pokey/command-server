@@ -1,14 +1,14 @@
 {
 	"name": "command-server",
 	"displayName": "Command server",
-	"description": "Exposes an HTTP REST api for command execution",
+	"description": "Exposes a file-based RPC API for running VSCode commands",
 	"publisher": "pokey",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/pokey/command-server"
 	},
-	"version": "0.3.4",
+	"version": "0.4.0",
 	"engines": {
 		"vscode": "^1.53.0"
 	},
@@ -25,17 +25,34 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "command-server.writePort",
-				"title": "Write port to file"
+				"command": "command-server.runCommand",
+				"title": "Read command description from a file and execute the command"
 			}
 		],
 		"keybindings": [
 			{
-				"command": "command-server.writePort",
+				"command": "command-server.runCommand",
 				"key": "ctrl+shift+alt+p",
 				"mac": "cmd+shift+alt+p"
 			}
-		]
+		],
+		"configuration": {
+			"title": "Command server",
+			"properties": {
+				"command-server.allowList": {
+					"type": "array",
+					"default": [
+						"*"
+					],
+					"description": "Commands to allow.  Supports simple glob syntax"
+				},
+				"command-server.denyList": {
+					"type": "array",
+					"default": [],
+					"description": "Commands to deny.  Supports simple glob syntax"
+				}
+			}
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run compile",
@@ -43,19 +60,25 @@
 		"watch": "tsc -watch -p ./",
 		"pretest": "yarn run compile && yarn run lint",
 		"lint": "eslint src --ext ts",
-		"test": "node ./out/test/runTest.js"
+		"test": "node ./out/test/runTest.js",
+		"vscode:uninstall": "node ./out/uninstall.js"
 	},
 	"devDependencies": {
-		"@types/vscode": "^1.53.0",
 		"@types/glob": "^7.1.3",
 		"@types/mocha": "^8.0.4",
-		"@types/node": "^12.11.7",
-		"eslint": "^7.15.0",
+		"@types/node": "^15.12.1",
+		"@types/rimraf": "^3.0.0",
+		"@types/vscode": "^1.53.0",
 		"@typescript-eslint/eslint-plugin": "^4.9.0",
 		"@typescript-eslint/parser": "^4.9.0",
+		"eslint": "^7.15.0",
 		"glob": "^7.1.6",
 		"mocha": "^8.1.3",
 		"typescript": "^4.1.2",
 		"vscode-test": "^1.4.1"
+	},
+	"dependencies": {
+		"minimatch": "^3.0.4",
+		"rimraf": "^3.0.2"
 	}
 }
