@@ -1,6 +1,5 @@
 import { mkdirSync, lstatSync } from "fs";
 import { S_IWOTH } from "constants";
-import { getuid } from "process";
 import {
   getRequestPath,
   getResponsePath,
