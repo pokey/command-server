@@ -1,14 +1,14 @@
 import { unlinkSync } from "fs";
-import { writeFile } from "fs/promises";
+import { FileHandle } from "fs/promises";
 
 /**
- * Opens a file exclusively, failing if it exists, and writes stringified JSON.
+ * Writes stringified JSON.
  * Appends newline so that other side knows when it is done
  * @param path Output path
  * @param body Body to stringify and write
  */
-export async function writeJSONExclusive(path: string, body: any) {
-  await writeFile(path, `${JSON.stringify(body)}\n`, { flag: "wx" });
+export async function writeJSON(file: FileHandle, body: any) {
+  await file.write(`${JSON.stringify(body)}\n`);
 }
 
 /**

@@ -1,7 +1,9 @@
+import { open } from "fs/promises";
 import { Minimatch } from "minimatch";
 import * as vscode from "vscode";
 
 import { readRequest, writeResponse } from "./io";
+import { getResponsePath } from "./paths";
 import { any } from "./regex";
 
 export default class CommandRunner {
@@ -43,6 +45,8 @@ export default class CommandRunner {
    * types.
    */
   async runCommand() {
+    const responseFile = await open(getResponsePath(), "wx");
+
     const { commandId, args, uuid, returnCommandOutput, waitForFinish } =
       await readRequest();
 
@@ -69,16 +73,18 @@ export default class CommandRunner {
         await commandPromise;
       }
 
-      await writeResponse({
+      await writeResponse(responseFile, {
         error: null,
         uuid,
         returnValue: commandReturnValue,
       });
     } catch (err) {
-      await writeResponse({
+      await writeResponse(responseFile, {
         error: err.message,
         uuid,
       });
     }
+
+    await responseFile.close();
   }
 }
