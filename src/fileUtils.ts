@@ -1,4 +1,3 @@
-import { unlinkSync } from "fs";
 import { FileHandle } from "fs/promises";
 
 /**
@@ -9,18 +8,4 @@ import { FileHandle } from "fs/promises";
  */
 export async function writeJSON(file: FileHandle, body: any) {
   await file.write(`${JSON.stringify(body)}\n`);
-}
-
-/**
- * Unlink the given file if it exists, otherwise do nothing
- * @param path The path to unlink
- */
-export function unlinkIfExistsSync(path: string) {
-  try {
-    unlinkSync(path);
-  } catch (err) {
-    if (err.code !== "ENOENT") {
-      throw err;
-    }
-  }
 }
