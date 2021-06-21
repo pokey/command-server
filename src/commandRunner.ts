@@ -5,10 +5,12 @@ import * as vscode from "vscode";
 import { readRequest, writeResponse } from "./io";
 import { getResponsePath } from "./paths";
 import { any } from "./regex";
+import { Request, Response } from "./types";
 
 export default class CommandRunner {
   allowRegex!: RegExp;
   denyRegex!: RegExp | null;
+  backgroundWindowProtection!: boolean;
 
   constructor() {
     this.reloadConfiguration = this.reloadConfiguration.bind(this);
@@ -35,6 +37,10 @@ export default class CommandRunner {
       denyList.length === 0
         ? null
         : any(...denyList.map((glob) => new Minimatch(glob).makeRe()));
+
+    this.backgroundWindowProtection = vscode.workspace
+      .getConfiguration("command-server")
+      .get<boolean>("backgroundWindowProtection")!;
   }
 
   /**
@@ -47,12 +53,27 @@ export default class CommandRunner {
   async runCommand() {
     const responseFile = await open(getResponsePath(), "wx");
 
+    var request: Request;
+
+    try {
+      request = await readRequest();
+    } catch (err) {
+      await responseFile.close();
+      throw err;
+    }
+
     const { commandId, args, uuid, returnCommandOutput, waitForFinish } =
-      await readRequest();
+      request;
+
+    const warnings = [];
 
     try {
       if (!vscode.window.state.focused) {
-        throw new Error("This editor is not active");
+        if (this.backgroundWindowProtection) {
+          throw new Error("This editor is not active");
+        } else {
+          warnings.push("This editor is not active");
+        }
       }
 
       if (!commandId.match(this.allowRegex)) {
@@ -77,11 +98,13 @@ export default class CommandRunner {
         error: null,
         uuid,
         returnValue: commandReturnValue,
+        warnings,
       });
     } catch (err) {
       await writeResponse(responseFile, {
         error: err.message,
         uuid,
+        warnings,
       });
     }
 
