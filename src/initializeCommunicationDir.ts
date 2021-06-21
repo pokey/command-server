@@ -1,11 +1,8 @@
 import { mkdirSync, lstatSync } from "fs";
 import { S_IWOTH } from "constants";
 import {
-  getRequestPath,
-  getResponsePath,
   getCommunicationDirPath,
 } from "./paths";
-import { unlinkIfExistsSync } from "./fileUtils";
 import { userInfo } from "os";
 
 export function initializeCommunicationDir() {
@@ -29,7 +26,4 @@ export function initializeCommunicationDir() {
       `Refusing to proceed because of invalid communication dir ${communicationDirPath}`
     );
   }
-
-  unlinkIfExistsSync(getRequestPath());
-  unlinkIfExistsSync(getResponsePath());
 }

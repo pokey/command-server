@@ -12,13 +12,9 @@ export function getCommunicationDirPath() {
 }
 
 export function getRequestPath() {
-  const communicationDirPath = getCommunicationDirPath();
-
-  return join(communicationDirPath, "request.json");
+  return join(getCommunicationDirPath(), "request.json");
 }
 
 export function getResponsePath() {
-  const communicationDirPath = getCommunicationDirPath();
-
-  return join(communicationDirPath, "response.json");
+  return join(getCommunicationDirPath(), "response.json");
 }

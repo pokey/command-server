@@ -45,4 +45,9 @@ export interface Response {
    * Any error encountered or null if successful
    */
   error: string | null;
+
+  /**
+   * A list of warnings issued when running the command
+   */
+  warnings: string[];
 }

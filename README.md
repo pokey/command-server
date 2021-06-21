@@ -55,6 +55,17 @@ Contributes the following commands:
 ## Configuration
 Contributes the following settings:
 
+### `command-server.backgroundWindowProtection`
+Turn this off if you're frequently seeing an error saying "This editor is not active".
+
+```json
+{
+    "command-server.backgroundWindowProtection": false
+}
+```
+
+Defaults to `true` (protection enabled).
+
 ### `command-server.allowList`
 Allows user to specify the allowed commands using glob syntax, eg:
 
@@ -82,12 +93,22 @@ Defaults to `[]` (doesn't deny anything).
 
 ## Known issues
 
+- If you see errors saying "This editor is not active", disable
+  `command-server.backgroundWindowProtection`, as described above.  VSCode
+  seems to be a bit inconsistent with determining which window has
+  focus.  There is code in the command server that tries to prevent a
+  background window from inadvertently executing a command, but when the
+  focused window detection fails, it will end up preventing correct commands
+  from running.  
 - The server won't respond until the extension is loaded.  This may be obvious,
   but just be aware that if you have other extensions that take a while to
   load, the server might not respond for a little while after you load an
   editor window until everything is fully loaded.
 
 ## Release Notes
+
+### 0.5.0
+- Improve robustness, and add `command-server.backgroundWindowProtection` setting
 
 ### 0.4.0
 - Switch to file-based RPC
