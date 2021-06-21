@@ -107,6 +107,8 @@ Defaults to `[]` (doesn't deny anything).
 
 ## Release Notes
 
-### 0.4.0
+### 0.5.0
 - Improve robustness, and add `command-server.backgroundWindowProtection` setting
+
+### 0.4.0
 - Switch to file-based RPC
