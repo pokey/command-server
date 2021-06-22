@@ -8,7 +8,7 @@
 		"type": "git",
 		"url": "https://github.com/pokey/command-server"
 	},
-	"version": "0.5.0",
+	"version": "0.5.1",
 	"engines": {
 		"vscode": "^1.53.0"
 	},
@@ -53,7 +53,7 @@
 				},
 				"command-server.backgroundWindowProtection": {
 					"type": "boolean",
-					"default": true,
+					"default": false,
 					"description": "Whether to enable protection against background windows executing a command"
 				}
 			}

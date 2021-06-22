@@ -1,6 +1,6 @@
-import { FileHandle, readFile, stat, unlink } from "fs/promises";
-import { STALE_TIMEOUT_MS, VSCODE_COMMAND_TIMEOUT_MS } from "./constants";
-import { getRequestPath, getResponsePath } from "./paths";
+import { FileHandle, readFile, stat } from "fs/promises";
+import { VSCODE_COMMAND_TIMEOUT_MS } from "./constants";
+import { getRequestPath } from "./paths";
 import { Request, Response } from "./types";
 import { writeJSON } from "./fileUtils";
 

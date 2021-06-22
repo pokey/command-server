@@ -40,8 +40,7 @@ with the command return value encoded as JSON, pass `expectResponse=true`.
 ### Python example
 
 Have a look at
-[`command_client.py`](https://github.com/knausj85/knausj_talon/blob/master/apps/vscode/command_client.py)
-in the knausj talon repo.
+[talon-vscode-command-client](https://github.com/pokey/talon-vscode-command-client).
 
 ## Commands
 Contributes the following commands:
@@ -54,17 +53,6 @@ Contributes the following commands:
 
 ## Configuration
 Contributes the following settings:
-
-### `command-server.backgroundWindowProtection`
-Turn this off if you're frequently seeing an error saying "This editor is not active".
-
-```json
-{
-    "command-server.backgroundWindowProtection": false
-}
-```
-
-Defaults to `true` (protection enabled).
 
 ### `command-server.allowList`
 Allows user to specify the allowed commands using glob syntax, eg:
@@ -93,19 +81,26 @@ Defaults to `[]` (doesn't deny anything).
 
 ## Known issues
 
-- If you see errors saying "This editor is not active", disable
-  `command-server.backgroundWindowProtection`, as described above.  VSCode
-  seems to be a bit inconsistent with determining which window has
-  focus.  There is code in the command server that tries to prevent a
-  background window from inadvertently executing a command, but when the
-  focused window detection fails, it will end up preventing correct commands
-  from running.  
 - The server won't respond until the extension is loaded.  This may be obvious,
   but just be aware that if you have other extensions that take a while to
   load, the server might not respond for a little while after you load an
   editor window until everything is fully loaded.
+- There is a very unlikely race condition.  If the front VSCode is hung
+  when you issue a command, and then you switch to another VSCode, and issue a
+  command, then if the first instance wakes up at the exact right moment it
+  could execute the command.  There is code in the command server that tries to
+  prevent a background window from inadvertently executing a command, but
+  VSCode seems to be a bit inconsistent with determining which window has
+  focus.  When this focused window detection fails, it will end up [preventing
+  correct commands from running](https://github.com/knausj85/knausj_talon/issues/466).  Thus, this protection has been disabled by
+  default, as the scenario it protects against has never been observed in practice.  If you do have issues with background windows trying to execute
+  commands, please file an issue, and we can look into another way to prevent
+  this from occurring.
 
 ## Release Notes
+
+### 0.5.1
+- Disable background window protection by default.
 
 ### 0.5.0
 - Improve robustness, and add `command-server.backgroundWindowProtection` setting
