@@ -99,6 +99,9 @@ Defaults to `[]` (doesn't deny anything).
 
 ## Release Notes
 
+### 0.6.0
+- Add partial support for untrusted workspaces
+
 ### 0.5.1
 - Disable background window protection by default.
 
