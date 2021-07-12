@@ -22,6 +22,16 @@
 	"extensionKind": [
 		"ui"
 	],
+	"capabilities": {
+		"untrustedWorkspaces": {
+			"supported": "limited",
+			"description": "Untrusted workspaces can't override allowList / denyList",
+			"restrictedConfigurations": [
+				"allowList",
+				"denyList"
+			]
+		}
+	},
 	"contributes": {
 		"commands": [
 			{
