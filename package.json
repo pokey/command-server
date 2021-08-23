@@ -42,6 +42,11 @@
 		"keybindings": [
 			{
 				"command": "command-server.runCommand",
+				"key": "ctrl+shift+f17",
+				"mac": "cmd+shift+f17"
+			},
+			{
+				"command": "command-server.runCommand",
 				"key": "ctrl+shift+alt+p",
 				"mac": "cmd+shift+alt+p"
 			}
