@@ -5,7 +5,7 @@ import * as vscode from "vscode";
 import { readRequest, writeResponse } from "./io";
 import { getResponsePath } from "./paths";
 import { any } from "./regex";
-import { Request, Response } from "./types";
+import { Request } from "./types";
 
 export default class CommandRunner {
   allowRegex!: RegExp;
@@ -102,7 +102,7 @@ export default class CommandRunner {
       });
     } catch (err) {
       await writeResponse(responseFile, {
-        error: err.message,
+        error: (err as Error).message,
         uuid,
         warnings,
       });

@@ -18,3 +18,11 @@ export function getRequestPath() {
 export function getResponsePath() {
   return join(getCommunicationDirPath(), "response.json");
 }
+
+export function getStateDirPath() {
+  return join(getCommunicationDirPath(), "state");
+}
+
+export function getGlobalStatePath() {
+  return join(getStateDirPath(), "global.json");
+}

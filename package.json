@@ -42,6 +42,11 @@
 		"keybindings": [
 			{
 				"command": "command-server.runCommand",
+				"key": "ctrl+shift+f11",
+				"mac": "cmd+shift+f11"
+			},
+			{
+				"command": "command-server.runCommand",
 				"key": "ctrl+shift+f17",
 				"mac": "cmd+shift+f17"
 			},
@@ -49,6 +54,17 @@
 				"command": "command-server.runCommand",
 				"key": "ctrl+shift+alt+p",
 				"mac": "cmd+shift+alt+p"
+			},
+			{
+				"command": "command-server.updateState.terminal.false",
+				"key": "ctrl+shift+f10",
+				"mac": "cmd+shift+f10"
+			},
+			{
+				"command": "command-server.updateState.terminal.true",
+				"key": "ctrl+shift+f10",
+				"mac": "cmd+shift+f10",
+				"when": "terminalFocus"
 			}
 		],
 		"configuration": {
