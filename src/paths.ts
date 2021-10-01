@@ -23,6 +23,10 @@ export function getStateDirPath() {
   return join(getCommunicationDirPath(), "state");
 }
 
-export function getGlobalStatePath() {
-  return join(getStateDirPath(), "global.json");
+export function getGlobalStateDirPath() {
+  return join(getStateDirPath());
+}
+
+export function getWorkspaceStateDirPath() {
+  return join(getStateDirPath());
 }
