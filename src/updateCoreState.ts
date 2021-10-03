@@ -12,7 +12,7 @@ import {
 } from "./constants";
 import State from "./state";
 
-export async function setBuiltinState(
+export async function updateCoreState(
   workspaceState: State,
   globalState: State
 ) {

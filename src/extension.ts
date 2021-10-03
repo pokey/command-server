@@ -3,12 +3,15 @@ import * as vscode from "vscode";
 import { initializeCommunicationDir } from "./initializeCommunicationDir";
 import CommandRunner from "./commandRunner";
 import State from "./state";
-import StateSaver from "./stateSaver";
-import { setBuiltinState, updateTerminalState } from "./setBuiltinState";
+import { updateCoreState, updateTerminalState } from "./updateCoreState";
 
 interface Api {
   globalState: vscode.Memento;
   workspaceState: vscode.Memento;
+}
+
+interface KeyDescription {
+  key: string;
 }
 
 export function activate(context: vscode.ExtensionContext) {
@@ -18,8 +21,8 @@ export function activate(context: vscode.ExtensionContext) {
 
   const globalState = new State(context.globalState);
   const workspaceState = new State(context.workspaceState);
-  const stateSaver = new StateSaver(globalState, workspaceState);
-  stateSaver.init();
+
+  let stateUpdaterPromise: Promise<void> | null = null;
 
   context.subscriptions.push(
     vscode.commands.registerCommand(
@@ -27,15 +30,37 @@ export function activate(context: vscode.ExtensionContext) {
       commandRunner.runCommand
     ),
     vscode.commands.registerCommand(
-      "command-server.saveState",
+      "command-server.updateCoreState",
       async (extraState: Record<string, unknown>) => {
-        for (const [key, value] of Object.entries(extraState)) {
-          await workspaceState.update(key, value);
+        stateUpdaterPromise = (async () => {
+          for (const [key, value] of Object.entries(extraState)) {
+            await workspaceState.update(key, value);
+          }
+
+          await updateCoreState(workspaceState, globalState);
+        })();
+
+        await stateUpdaterPromise;
+
+        stateUpdaterPromise = null;
+      }
+    ),
+    vscode.commands.registerCommand(
+      "command-server.getState",
+      async (keys: KeyDescription[]) => {
+        if (stateUpdaterPromise != null) {
+          await stateUpdaterPromise;
         }
 
-        await setBuiltinState(workspaceState, globalState);
-
-        await stateSaver.save();
+        return Object.fromEntries(
+          keys.map(({ key }) => [
+            key,
+            {
+              newValue:
+                workspaceState.get(key, null) ?? globalState.get(key, null),
+            },
+          ])
+        );
       }
     )
   );
