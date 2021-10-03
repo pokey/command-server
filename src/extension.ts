@@ -4,6 +4,8 @@ import { initializeCommunicationDir } from "./initializeCommunicationDir";
 import CommandRunner from "./commandRunner";
 import State from "./state";
 import { updateCoreState, updateTerminalState } from "./updateCoreState";
+import StateUpdateSignaler from "./stateUpdateSignaler";
+import SignallingState from "./signallingState";
 
 interface Api {
   globalState: vscode.Memento;
@@ -19,6 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   const commandRunner = new CommandRunner();
 
+  const stateUpdateSignaler = new StateUpdateSignaler();
   const globalState = new State(context.globalState);
   const workspaceState = new State(context.workspaceState);
 
@@ -79,9 +82,17 @@ export function activate(context: vscode.ExtensionContext) {
     //   vscode.workspace.onDidOpenTextDocument(updateDocuments)
   );
 
+  // NB: we only signal if externals update; we don't bother for our own
+  // updates because update will shortly be requested
   const api: Api = {
-    workspaceState,
-    globalState,
+    workspaceState: new SignallingState(
+      workspaceState,
+      stateUpdateSignaler.signalStateUpdated
+    ),
+    globalState: new SignallingState(
+      globalState,
+      stateUpdateSignaler.signalStateUpdated
+    ),
   };
 
   return api;

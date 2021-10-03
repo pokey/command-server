@@ -19,14 +19,6 @@ export function getResponsePath() {
   return join(getCommunicationDirPath(), "response.json");
 }
 
-export function getStateDirPath() {
-  return join(getCommunicationDirPath(), "state");
-}
-
-export function getGlobalStateDirPath() {
-  return join(getStateDirPath());
-}
-
-export function getWorkspaceStateDirPath() {
-  return join(getStateDirPath());
+export function getStateUpdatedSignalPath() {
+  return join(getCommunicationDirPath(), "stateUpdatedSignal");
 }
