@@ -10,7 +10,7 @@
 	},
 	"version": "0.7.0",
 	"engines": {
-		"vscode": "^1.53.0"
+		"vscode": "^1.60.0"
 	},
 	"categories": [
 		"Other"
@@ -37,9 +37,22 @@
 			{
 				"command": "command-server.runCommand",
 				"title": "Read command description from a file and execute the command"
+			},
+			{
+				"command": "command-server.getState",
+				"title": "Get state"
+			},
+			{
+				"command": "command-server.updateCoreState",
+				"title": "Update state based, on current when clause context"
 			}
 		],
 		"keybindings": [
+			{
+				"command": "command-server.runCommand",
+				"key": "ctrl+shift+f11",
+				"mac": "cmd+shift+f11"
+			},
 			{
 				"command": "command-server.runCommand",
 				"key": "ctrl+shift+f17",
@@ -49,6 +62,41 @@
 				"command": "command-server.runCommand",
 				"key": "ctrl+shift+alt+p",
 				"mac": "cmd+shift+alt+p"
+			},
+			{
+				"command": "command-server.updateCoreState",
+				"key": "ctrl+shift+f10",
+				"mac": "cmd+shift+f10",
+				"args": {
+					"core.focus": null
+				}
+			},
+			{
+				"command": "command-server.updateCoreState",
+				"key": "ctrl+shift+f10",
+				"mac": "cmd+shift+f10",
+				"when": "terminalFocus",
+				"args": {
+					"core.focus": "terminal"
+				}
+			},
+			{
+				"command": "command-server.updateCoreState",
+				"key": "ctrl+shift+f10",
+				"mac": "cmd+shift+f10",
+				"when": "editorTextFocus",
+				"args": {
+					"core.focus": "editor"
+				}
+			},
+			{
+				"command": "command-server.updateCoreState",
+				"key": "ctrl+shift+f10",
+				"mac": "cmd+shift+f10",
+				"when": "inQuickOpen",
+				"args": {
+					"core.focus": "quickOpen"
+				}
 			}
 		],
 		"configuration": {
@@ -88,7 +136,7 @@
 		"@types/mocha": "^8.0.4",
 		"@types/node": "^15.12.1",
 		"@types/rimraf": "^3.0.0",
-		"@types/vscode": "^1.53.0",
+		"@types/vscode": "^1.60.0",
 		"@typescript-eslint/eslint-plugin": "^4.9.0",
 		"@typescript-eslint/parser": "^4.9.0",
 		"eslint": "^7.15.0",

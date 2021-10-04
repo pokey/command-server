@@ -18,3 +18,7 @@ export function getRequestPath() {
 export function getResponsePath() {
   return join(getCommunicationDirPath(), "response.json");
 }
+
+export function getStateUpdatedSignalPath() {
+  return join(getCommunicationDirPath(), "stateUpdatedSignal");
+}
