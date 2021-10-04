@@ -9,6 +9,7 @@ import {
   TERMINALS_KEY,
   TERMINAL_FOCUSED,
   VISIBLE_EDITORS_KEY,
+  WORKSPACE_FOLDERS_KEY,
 } from "./constants";
 import State from "./state";
 
@@ -36,6 +37,14 @@ export async function updateCoreState(
     focus === TERMINAL_FOCUSED
       ? workspaceState.get<string | null>(ACTIVE_TERMINAL_KEY)
       : null
+  );
+
+  await workspaceState.update(
+    WORKSPACE_FOLDERS_KEY,
+    workspace.workspaceFolders?.map((folder) => ({
+      uri: folder.uri.toString(),
+      name: folder.name,
+    })) ?? []
   );
 }
 

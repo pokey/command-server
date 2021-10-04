@@ -17,3 +17,4 @@ export const VISIBLE_EDITORS_KEY = "core.visibleEditors";
 export const ACTIVE_EDITOR_KEY = "core.activeEditor";
 export const FOCUSED_EDITOR_KEY = "core.focusedEditor";
 export const FOCUSED_TERMINAL_KEY = "core.focusedTerminal";
+export const WORKSPACE_FOLDERS_KEY = "core.workspaceFolders";
