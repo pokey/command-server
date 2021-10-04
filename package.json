@@ -44,7 +44,7 @@
 			},
 			{
 				"command": "command-server.updateCoreState",
-				"title": "Update state based on current when clause context"
+				"title": "Update state based, on current when clause context"
 			}
 		],
 		"keybindings": [
@@ -87,6 +87,15 @@
 				"when": "editorTextFocus",
 				"args": {
 					"core.focus": "editor"
+				}
+			},
+			{
+				"command": "command-server.updateCoreState",
+				"key": "ctrl+shift+f10",
+				"mac": "cmd+shift+f10",
+				"when": "inQuickOpen",
+				"args": {
+					"core.focus": "quickOpen"
 				}
 			}
 		],
