@@ -11,8 +11,8 @@ export function getCommunicationDirPath() {
   return join(tmpdir(), `vscode-command-server${suffix}`);
 }
 
-export function getNamedSubdir(name: string): string {
-  return join(getCommunicationDirPath(), "namedSubdirs", name);
+export function getSignalDirPath(): string {
+  return join(getCommunicationDirPath(), "signals");
 }
 
 export function getRequestPath() {

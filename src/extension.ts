@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 
 import { initializeCommunicationDir } from "./initializeCommunicationDir";
 import CommandRunner from "./commandRunner";
-import { getNamedSubdir } from "./paths";
+import { getInboundSignal } from "./signal";
 
 export function activate(context: vscode.ExtensionContext) {
   initializeCommunicationDir();
@@ -17,7 +17,17 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   return {
-    getNamedSubdir,
+    /**
+     * These signals can be used as a form of IPC to indicate that an event has
+     * occurred.
+     */
+    signals: {
+      /**
+       * This signal is emitted by the voice engine to indicate that a phrase has
+       * just begun execution.
+       */
+      prePhrase: getInboundSignal("prePhrase"),
+    },
   };
 }
 
