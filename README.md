@@ -101,24 +101,6 @@ Defaults to `[]` (doesn't deny anything).
   commands, please file an issue, and we can look into another way to prevent
   this from occurring.
 
-## Release Notes
+## Change Log
 
-### 0.7.0
-
-- Switch default keybinding
-
-### 0.6.0
-
-- Add partial support for untrusted workspaces
-
-### 0.5.1
-
-- Disable background window protection by default.
-
-### 0.5.0
-
-- Improve robustness, and add `command-server.backgroundWindowProtection` setting
-
-### 0.4.0
-
-- Switch to file-based RPC
+See [CHANGELOG.md](CHANGELOG.md).
