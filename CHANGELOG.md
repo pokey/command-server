@@ -2,9 +2,9 @@
 
 All notable changes to the `command-server` extension will be documented in this file.
 
-## [0.8.0](https://github.com/pokey/cursorless-vscode/tree/0.8.0) (2021-12-06)
+## [0.8.1](https://github.com/pokey/cursorless-vscode/tree/0.8.0) (2021-12-06)
 
-- Pre-phrase signal [\#10](https://github.com/pokey/cursorless-vscode/pull/10) ([pokey](https://github.com/pokey))
+- Pre-phrase signal [\#10](https://github.com/pokey/command-server/pull/10) ([pokey](https://github.com/pokey))
 
 ## 0.7.0
 
