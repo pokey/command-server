@@ -8,7 +8,7 @@ import { userInfo } from "os";
 export function initializeCommunicationDir() {
   const communicationDirPath = getCommunicationDirPath();
 
-  console.log(`Creating communication dir ${communicationDirPath}`);
+  console.debug(`Creating communication dir ${communicationDirPath}`);
   mkdirSync(communicationDirPath, { recursive: true, mode: 0o770 });
 
   const stats = lstatSync(communicationDirPath);
