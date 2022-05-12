@@ -8,7 +8,7 @@
 		"type": "git",
 		"url": "https://github.com/pokey/command-server"
 	},
-	"version": "0.8.2",
+	"version": "0.9.0",
 	"engines": {
 		"vscode": "^1.53.0"
 	},
@@ -37,6 +37,14 @@
 			{
 				"command": "command-server.runCommand",
 				"title": "Read command description from a file and execute the command"
+			},
+			{
+				"command": "command-server.getSetting",
+				"title": "Fetch setting from vscode"
+			},
+			{
+				"command": "command-server.setSetting",
+				"title": "Updates setting to vscode"
 			}
 		],
 		"keybindings": [

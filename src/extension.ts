@@ -13,6 +13,16 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       "command-server.runCommand",
       commandRunner.runCommand
+    ),
+    vscode.commands.registerCommand(
+      "command-server.getSetting",
+      (section: string, defaultValue?: any) =>
+        vscode.workspace.getConfiguration().get(section, defaultValue)
+    ),
+    vscode.commands.registerCommand(
+      "command-server.setSetting",
+      (section: string, value: any) =>
+        vscode.workspace.getConfiguration().update(section, value, true)
     )
   );
 
