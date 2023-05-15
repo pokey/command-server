@@ -5,13 +5,12 @@ import * as vscode from "vscode";
 import { readRequest, writeResponse } from "./io";
 import { getResponsePath } from "./paths";
 import { any } from "./regex";
-import { Request, FocusedElementType } from "./types";
+import { Request } from "./types";
 
 export default class CommandRunner {
   allowRegex!: RegExp;
   denyRegex!: RegExp | null;
   backgroundWindowProtection!: boolean;
-  focusedElementType?: FocusedElementType;
 
   constructor() {
     this.reloadConfiguration = this.reloadConfiguration.bind(this);
@@ -51,8 +50,7 @@ export default class CommandRunner {
    * output to response file.  See also documentation for Request / Response
    * types.
    */
-  async runCommand(focusedElementType?: FocusedElementType) {
-    this.focusedElementType = focusedElementType;
+  async runCommand() {
     const responseFile = await open(getResponsePath(), "wx");
 
     let request: Request;

@@ -1,22 +1,27 @@
 import * as vscode from "vscode";
 
-import { initializeCommunicationDir } from "./initializeCommunicationDir";
 import CommandRunner from "./commandRunner";
+import { initializeCommunicationDir } from "./initializeCommunicationDir";
 import { getInboundSignal } from "./signal";
+import { FocusedElementType } from "./types";
 
 export function activate(context: vscode.ExtensionContext) {
   initializeCommunicationDir();
 
   const commandRunner = new CommandRunner();
+  let focusedElementType: FocusedElementType | undefined;
 
   context.subscriptions.push(
     vscode.commands.registerCommand(
       "command-server.runCommand",
-      commandRunner.runCommand
+      (focusedElementType_?: FocusedElementType) => {
+        focusedElementType = focusedElementType_;
+        return commandRunner.runCommand();
+      }
     ),
     vscode.commands.registerCommand(
       "command-server.getFocusedElementType",
-      () => commandRunner.focusedElementType ?? null
+      () => focusedElementType ?? null
     )
   );
 
@@ -24,7 +29,7 @@ export function activate(context: vscode.ExtensionContext) {
     /**
      * The type of the focused element in vscode at the moment of the command being executed.
      */
-    focusedElementType: () => commandRunner.focusedElementType,
+    focusedElementType: () => focusedElementType,
 
     /**
      * These signals can be used as a form of IPC to indicate that an event has
