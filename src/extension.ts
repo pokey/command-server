@@ -18,7 +18,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   return {
     /**
-     * The type of the focused element in vscode.
+     * The type of the focused element in vscode at the moment of the command being executed.
      */
     focusedElementType: () => commandRunner.focusedElementType,
 
