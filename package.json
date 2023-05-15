@@ -49,6 +49,34 @@
 				"command": "command-server.runCommand",
 				"key": "ctrl+shift+alt+p",
 				"mac": "cmd+shift+alt+p"
+			},
+			{
+				"command": "command-server.runCommand",
+				"key": "ctrl+shift+f17",
+				"mac": "cmd+shift+f17",
+				"when": "editorTextFocus",
+				"args": "textEditor"
+			},
+			{
+				"command": "command-server.runCommand",
+				"key": "ctrl+shift+alt+p",
+				"mac": "cmd+shift+alt+p",
+				"when": "editorTextFocus",
+				"args": "textEditor"
+			},
+			{
+				"command": "command-server.runCommand",
+				"key": "ctrl+shift+f17",
+				"mac": "cmd+shift+f17",
+				"when": "terminalFocus",
+				"args": "terminal"
+			},
+			{
+				"command": "command-server.runCommand",
+				"key": "ctrl+shift+alt+p",
+				"mac": "cmd+shift+alt+p",
+				"when": "terminalFocus",
+				"args": "terminal"
 			}
 		],
 		"configuration": {

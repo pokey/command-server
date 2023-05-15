@@ -18,6 +18,11 @@ export function activate(context: vscode.ExtensionContext) {
 
   return {
     /**
+     * The type of the focused element in vscode.
+     */
+    focusedElementType: () => commandRunner.focusedElementType,
+
+    /**
      * These signals can be used as a form of IPC to indicate that an event has
      * occurred.
      */

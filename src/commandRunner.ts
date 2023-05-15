@@ -5,12 +5,13 @@ import * as vscode from "vscode";
 import { readRequest, writeResponse } from "./io";
 import { getResponsePath } from "./paths";
 import { any } from "./regex";
-import { Request, Response } from "./types";
+import { Request, FocusedElementType } from "./types";
 
 export default class CommandRunner {
   allowRegex!: RegExp;
   denyRegex!: RegExp | null;
   backgroundWindowProtection!: boolean;
+  focusedElementType?: FocusedElementType;
 
   constructor() {
     this.reloadConfiguration = this.reloadConfiguration.bind(this);
@@ -50,10 +51,11 @@ export default class CommandRunner {
    * output to response file.  See also documentation for Request / Response
    * types.
    */
-  async runCommand() {
+  async runCommand(focusedElementType?: FocusedElementType) {
+    this.focusedElementType = focusedElementType;
     const responseFile = await open(getResponsePath(), "wx");
 
-    var request: Request;
+    let request: Request;
 
     try {
       request = await readRequest();
@@ -86,7 +88,7 @@ export default class CommandRunner {
 
       const commandPromise = vscode.commands.executeCommand(commandId, ...args);
 
-      var commandReturnValue = null;
+      let commandReturnValue = null;
 
       if (returnCommandOutput) {
         commandReturnValue = await commandPromise;
@@ -100,7 +102,7 @@ export default class CommandRunner {
         returnValue: commandReturnValue,
         warnings,
       });
-    } catch (err) {
+    } catch (err: any) {
       await writeResponse(responseFile, {
         error: err.message,
         uuid,
