@@ -37,6 +37,10 @@
 			{
 				"command": "command-server.runCommand",
 				"title": "Read command description from a file and execute the command"
+			},
+			{
+				"command": "command-server.getFocusedElementType",
+				"title": "Returns the type of the currently focused element in vscode"
 			}
 		],
 		"keybindings": [

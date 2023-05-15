@@ -13,6 +13,10 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       "command-server.runCommand",
       commandRunner.runCommand
+    ),
+    vscode.commands.registerCommand(
+      "command-server.getFocusedElementType",
+      () => commandRunner.focusedElementType ?? null
     )
   );
 
