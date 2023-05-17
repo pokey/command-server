@@ -100,9 +100,9 @@ export default class CommandRunner {
         returnValue: commandReturnValue,
         warnings,
       });
-    } catch (err: any) {
+    } catch (err) {
       await writeResponse(responseFile, {
-        error: err.message,
+        error: (err as Error).message,
         uuid,
         warnings,
       });
