@@ -1,136 +1,136 @@
 {
-	"name": "command-server",
-	"displayName": "Command server",
-	"description": "Exposes a file-based RPC API for running VSCode commands",
-	"publisher": "pokey",
-	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/pokey/command-server"
-	},
-	"version": "0.8.2",
-	"engines": {
-		"vscode": "^1.53.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-		"*"
-	],
-	"main": "./out/extension.js",
-	"extensionKind": [
-		"ui"
-	],
-	"capabilities": {
-		"untrustedWorkspaces": {
-			"supported": "limited",
-			"description": "Untrusted workspaces can't override allowList / denyList",
-			"restrictedConfigurations": [
-				"allowList",
-				"denyList"
-			]
-		}
-	},
-	"contributes": {
-		"commands": [
-			{
-				"command": "command-server.runCommand",
-				"title": "Read command description from a file and execute the command"
-			},
-			{
-				"command": "command-server.getFocusedElementType",
-				"title": "Returns the type of the currently focused element in vscode"
-			}
-		],
-		"keybindings": [
-			{
-				"command": "command-server.runCommand",
-				"key": "ctrl+shift+f17",
-				"mac": "cmd+shift+f17"
-			},
-			{
-				"command": "command-server.runCommand",
-				"key": "ctrl+shift+alt+p",
-				"mac": "cmd+shift+alt+p"
-			},
-			{
-				"command": "command-server.runCommand",
-				"key": "ctrl+shift+f17",
-				"mac": "cmd+shift+f17",
-				"when": "editorTextFocus",
-				"args": "textEditor"
-			},
-			{
-				"command": "command-server.runCommand",
-				"key": "ctrl+shift+alt+p",
-				"mac": "cmd+shift+alt+p",
-				"when": "editorTextFocus",
-				"args": "textEditor"
-			},
-			{
-				"command": "command-server.runCommand",
-				"key": "ctrl+shift+f17",
-				"mac": "cmd+shift+f17",
-				"when": "terminalFocus",
-				"args": "terminal"
-			},
-			{
-				"command": "command-server.runCommand",
-				"key": "ctrl+shift+alt+p",
-				"mac": "cmd+shift+alt+p",
-				"when": "terminalFocus",
-				"args": "terminal"
-			}
-		],
-		"configuration": {
-			"title": "Command server",
-			"properties": {
-				"command-server.allowList": {
-					"type": "array",
-					"default": [
-						"*"
-					],
-					"description": "Commands to allow.  Supports simple glob syntax"
-				},
-				"command-server.denyList": {
-					"type": "array",
-					"default": [],
-					"description": "Commands to deny.  Supports simple glob syntax"
-				},
-				"command-server.backgroundWindowProtection": {
-					"type": "boolean",
-					"default": false,
-					"description": "Whether to enable protection against background windows executing a command"
-				}
-			}
-		}
-	},
-	"scripts": {
-		"vscode:prepublish": "yarn run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"pretest": "yarn run compile && yarn run lint",
-		"lint": "eslint src --ext ts",
-		"test": "node ./out/test/runTest.js",
-		"vscode:uninstall": "node ./out/uninstall.js"
-	},
-	"devDependencies": {
-		"@types/glob": "^7.1.3",
-		"@types/mocha": "^8.0.4",
-		"@types/node": "^15.12.1",
-		"@types/rimraf": "^3.0.0",
-		"@types/vscode": "^1.53.0",
-		"@typescript-eslint/eslint-plugin": "^4.9.0",
-		"@typescript-eslint/parser": "^4.9.0",
-		"eslint": "^7.15.0",
-		"glob": "^7.1.6",
-		"mocha": "^8.1.3",
-		"typescript": "^4.1.2",
-		"vscode-test": "^1.4.1"
-	},
-	"dependencies": {
-		"minimatch": "^3.0.4",
-		"rimraf": "^3.0.2"
-	}
+  "name": "command-server",
+  "displayName": "Command server",
+  "description": "Exposes a file-based RPC API for running VSCode commands",
+  "publisher": "pokey",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pokey/command-server"
+  },
+  "version": "0.9.0",
+  "engines": {
+    "vscode": "^1.53.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/extension.js",
+  "extensionKind": [
+    "ui"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "Untrusted workspaces can't override allowList / denyList",
+      "restrictedConfigurations": [
+        "allowList",
+        "denyList"
+      ]
+    }
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "command-server.runCommand",
+        "title": "Read command description from a file and execute the command"
+      },
+      {
+        "command": "command-server.getFocusedElementType",
+        "title": "Returns the type of the currently focused element in vscode"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "command-server.runCommand",
+        "key": "ctrl+shift+f17",
+        "mac": "cmd+shift+f17"
+      },
+      {
+        "command": "command-server.runCommand",
+        "key": "ctrl+shift+alt+p",
+        "mac": "cmd+shift+alt+p"
+      },
+      {
+        "command": "command-server.runCommand",
+        "key": "ctrl+shift+f17",
+        "mac": "cmd+shift+f17",
+        "when": "editorTextFocus",
+        "args": "textEditor"
+      },
+      {
+        "command": "command-server.runCommand",
+        "key": "ctrl+shift+alt+p",
+        "mac": "cmd+shift+alt+p",
+        "when": "editorTextFocus",
+        "args": "textEditor"
+      },
+      {
+        "command": "command-server.runCommand",
+        "key": "ctrl+shift+f17",
+        "mac": "cmd+shift+f17",
+        "when": "terminalFocus",
+        "args": "terminal"
+      },
+      {
+        "command": "command-server.runCommand",
+        "key": "ctrl+shift+alt+p",
+        "mac": "cmd+shift+alt+p",
+        "when": "terminalFocus",
+        "args": "terminal"
+      }
+    ],
+    "configuration": {
+      "title": "Command server",
+      "properties": {
+        "command-server.allowList": {
+          "type": "array",
+          "default": [
+            "*"
+          ],
+          "description": "Commands to allow.  Supports simple glob syntax"
+        },
+        "command-server.denyList": {
+          "type": "array",
+          "default": [],
+          "description": "Commands to deny.  Supports simple glob syntax"
+        },
+        "command-server.backgroundWindowProtection": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to enable protection against background windows executing a command"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "yarn run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "yarn run compile && yarn run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "vscode:uninstall": "node ./out/uninstall.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.3",
+    "@types/mocha": "^8.0.4",
+    "@types/node": "^15.12.1",
+    "@types/rimraf": "^3.0.0",
+    "@types/vscode": "^1.53.0",
+    "@typescript-eslint/eslint-plugin": "^4.9.0",
+    "@typescript-eslint/parser": "^4.9.0",
+    "eslint": "^7.15.0",
+    "glob": "^7.1.6",
+    "mocha": "^8.1.3",
+    "typescript": "^4.1.2",
+    "vscode-test": "^1.4.1"
+  },
+  "dependencies": {
+    "minimatch": "^3.0.4",
+    "rimraf": "^3.0.2"
+  }
 }
