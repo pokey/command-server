@@ -38,32 +38,30 @@ export class NativeAdapter implements RuntimeAdapter {
     this.responseFile = null;
   }
 
- initializeCommunicationDir(): Promise<void> {
-  const communicationDirPath = getCommunicationDirPath();
+  initialize(): Promise<void> {
+    const communicationDirPath = getCommunicationDirPath();
 
-  console.debug(`Creating communication dir ${communicationDirPath}`);
-  mkdirSync(communicationDirPath, { recursive: true, mode: 0o770 });
+    console.debug(`Creating communication dir ${communicationDirPath}`);
+    mkdirSync(communicationDirPath, { recursive: true, mode: 0o770 });
 
-  const stats = lstatSync(communicationDirPath);
+    const stats = lstatSync(communicationDirPath);
 
-  const info = userInfo();
+    const info = userInfo();
 
-  if (
-    !stats.isDirectory() ||
-    stats.isSymbolicLink() ||
-    stats.mode & S_IWOTH ||
-    // On Windows, uid < 0, so we don't worry about it for simplicity
-    (info.uid >= 0 && stats.uid !== info.uid)
-  ) {
-    throw new Error(
-      `Refusing to proceed because of invalid communication dir ${communicationDirPath}`
-    );
+    if (
+	!stats.isDirectory() ||
+	stats.isSymbolicLink() ||
+	stats.mode & S_IWOTH ||
+	// On Windows, uid < 0, so we don't worry about it for simplicity
+	(info.uid >= 0 && stats.uid !== info.uid)
+	) {
+      throw new Error(`Refusing to proceed because of invalid communication dir ${communicationDirPath}`);
+    }
+
+    return new Promise(() => {});
   }
 
-  return new Promise(() => {});
-}
-
-  async lockResponse(): Promise<void> {
+  async prepareResponse(): Promise<void> {
     if (this.responseFile) {
       throw new Error("response is already locked");
     }
@@ -88,12 +86,9 @@ export class NativeAdapter implements RuntimeAdapter {
     const stats = await stat(requestPath);
     const request = JSON.parse(await readFile(requestPath, "utf-8"));
 
-    if (
-      Math.abs(stats.mtimeMs - new Date().getTime()) > VSCODE_COMMAND_TIMEOUT_MS
-    ) {
-      throw new Error(
-        "Request file is older than timeout; refusing to execute command"
-      );
+    if (Math.abs(stats.mtimeMs - new Date().getTime()) >
+	VSCODE_COMMAND_TIMEOUT_MS) {
+      throw new Error("Request file is older than timeout; refusing to execute command");
     }
 
     return request;
@@ -111,9 +106,9 @@ export class NativeAdapter implements RuntimeAdapter {
     await this.responseFile.write(`${JSON.stringify(response)}\n`);
   }
 
-     getInboundSignal(name: string) {
-      const signalDir = getSignalDirPath();
-      const path = join(signalDir, name);
-      return new InboundSignal(path);
-    }
+  getInboundSignal(name: string) {
+    const signalDir = getSignalDirPath();
+    const path = join(signalDir, name);
+    return new InboundSignal(path);
+  }
 }

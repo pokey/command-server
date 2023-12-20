@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 
 import { any } from "./regex";
 import { Request } from "./types";
-import {RuntimeAdapter} from "./runtimeAdapter";
+import { RuntimeAdapter } from "./runtimeAdapter";
 
 export default class CommandRunner {
   allowRegex!: RegExp;
@@ -51,7 +51,7 @@ export default class CommandRunner {
    * types.
    */
   async runCommand() {
-    const response = await this.runtimeAdapter.lockResponse();
+    const response = await this.runtimeAdapter.prepareResponse();
 
     let request: Request;
 

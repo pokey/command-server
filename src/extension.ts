@@ -4,9 +4,9 @@ import { NativeAdapter } from "./nativeAdapter";
 import CommandRunner from "./commandRunner";
 import { FocusedElementType } from "./types";
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
   const nativeAdapter = new NativeAdapter();
-  nativeAdapter.initializeCommunicationDir();
+  await nativeAdapter.initialize();
 
   const commandRunner = new CommandRunner(nativeAdapter);
   let focusedElementType: FocusedElementType | undefined;
