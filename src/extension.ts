@@ -1,14 +1,14 @@
 import * as vscode from "vscode";
 
+import { NativeAdapter } from "./nativeAdapter";
 import CommandRunner from "./commandRunner";
-import { initializeCommunicationDir } from "./initializeCommunicationDir";
-import { getInboundSignal } from "./signal";
 import { FocusedElementType } from "./types";
 
 export function activate(context: vscode.ExtensionContext) {
-  initializeCommunicationDir();
+  const nativeAdapter = new NativeAdapter();
+  nativeAdapter.initializeCommunicationDir();
 
-  const commandRunner = new CommandRunner();
+  const commandRunner = new CommandRunner(nativeAdapter);
   let focusedElementType: FocusedElementType | undefined;
 
   context.subscriptions.push(
@@ -40,7 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
        * This signal is emitted by the voice engine to indicate that a phrase has
        * just begun execution.
        */
-      prePhrase: getInboundSignal("prePhrase"),
+      prePhrase: nativeAdapter.getInboundSignal("prePhrase"),
     },
   };
 }

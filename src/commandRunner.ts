@@ -1,20 +1,20 @@
-import { open } from "fs/promises";
 import { Minimatch } from "minimatch";
 import * as vscode from "vscode";
 
-import { readRequest, writeResponse } from "./io";
-import { getResponsePath } from "./paths";
 import { any } from "./regex";
 import { Request } from "./types";
+import {RuntimeAdapter} from "./runtimeAdapter";
 
 export default class CommandRunner {
   allowRegex!: RegExp;
   denyRegex!: RegExp | null;
   backgroundWindowProtection!: boolean;
+  runtimeAdapter: RuntimeAdapter;
 
-  constructor() {
+  constructor(runtimeAdapter: RuntimeAdapter) {
     this.reloadConfiguration = this.reloadConfiguration.bind(this);
     this.runCommand = this.runCommand.bind(this);
+    this.runtimeAdapter = runtimeAdapter;
 
     this.reloadConfiguration();
     vscode.workspace.onDidChangeConfiguration(this.reloadConfiguration);
@@ -51,14 +51,14 @@ export default class CommandRunner {
    * types.
    */
   async runCommand() {
-    const responseFile = await open(getResponsePath(), "wx");
+    const response = await this.runtimeAdapter.lockResponse();
 
     let request: Request;
 
     try {
-      request = await readRequest();
+      request = await this.runtimeAdapter.readRequest();
     } catch (err) {
-      await responseFile.close();
+      await this.runtimeAdapter.closeResponse();
       throw err;
     }
 
@@ -94,20 +94,20 @@ export default class CommandRunner {
         await commandPromise;
       }
 
-      await writeResponse(responseFile, {
+      await this.runtimeAdapter.writeResponse({
         error: null,
         uuid,
         returnValue: commandReturnValue,
         warnings,
       });
     } catch (err) {
-      await writeResponse(responseFile, {
+      await this.runtimeAdapter.writeResponse({
         error: (err as Error).message,
         uuid,
         warnings,
       });
     }
 
-    await responseFile.close();
+    await this.runtimeAdapter.closeResponse();
   }
 }
