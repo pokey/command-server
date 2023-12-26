@@ -3,8 +3,8 @@ import { join } from "path";
 import { S_IWOTH } from "constants";
 import { getCommunicationDirPath, getRequestPath, getResponsePath, getSignalDirPath } from "./paths";
 import { userInfo } from "os";
-import {RuntimeAdapter} from "./runtimeAdapter";
-import {FileHandle, open, readFile, stat } from "fs/promises";
+import { RuntimeAdapter} from "./runtimeAdapter";
+import { FileHandle, open, readFile, stat } from "fs/promises";
 import { VSCODE_COMMAND_TIMEOUT_MS } from "./constants";
 import { Request, Response } from "./types";
 
