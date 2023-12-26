@@ -57,8 +57,6 @@ export class NativeAdapter implements RuntimeAdapter {
 	) {
       throw new Error(`Refusing to proceed because of invalid communication dir ${communicationDirPath}`);
     }
-
-    return new Promise(() => {});
   }
 
   async prepareResponse(): Promise<void> {
