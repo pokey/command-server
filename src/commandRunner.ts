@@ -3,18 +3,16 @@ import * as vscode from "vscode";
 
 import { any } from "./regex";
 import { Request } from "./types";
-import { RuntimeAdapter } from "./runtimeAdapter";
+import { Io } from "./io";
 
 export default class CommandRunner {
-  allowRegex!: RegExp;
-  denyRegex!: RegExp | null;
-  backgroundWindowProtection!: boolean;
-  runtimeAdapter: RuntimeAdapter;
+  private allowRegex!: RegExp;
+  private denyRegex!: RegExp | null;
+  private backgroundWindowProtection!: boolean;
 
-  constructor(runtimeAdapter: RuntimeAdapter) {
+  constructor(private io: Io) {
     this.reloadConfiguration = this.reloadConfiguration.bind(this);
     this.runCommand = this.runCommand.bind(this);
-    this.runtimeAdapter = runtimeAdapter;
 
     this.reloadConfiguration();
     vscode.workspace.onDidChangeConfiguration(this.reloadConfiguration);
@@ -51,14 +49,14 @@ export default class CommandRunner {
    * types.
    */
   async runCommand() {
-    const response = await this.runtimeAdapter.prepareResponse();
+    await this.io.prepareResponse();
 
     let request: Request;
 
     try {
-      request = await this.runtimeAdapter.readRequest();
+      request = await this.io.readRequest();
     } catch (err) {
-      await this.runtimeAdapter.closeResponse();
+      await this.io.closeResponse();
       throw err;
     }
 
@@ -94,20 +92,20 @@ export default class CommandRunner {
         await commandPromise;
       }
 
-      await this.runtimeAdapter.writeResponse({
+      await this.io.writeResponse({
         error: null,
         uuid,
         returnValue: commandReturnValue,
         warnings,
       });
     } catch (err) {
-      await this.runtimeAdapter.writeResponse({
+      await this.io.writeResponse({
         error: (err as Error).message,
         uuid,
         warnings,
       });
     }
 
-    await this.runtimeAdapter.closeResponse();
+    await this.io.closeResponse();
   }
 }

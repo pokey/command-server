@@ -1,9 +1,14 @@
 import { mkdirSync, lstatSync } from "fs";
 import { join } from "path";
 import { S_IWOTH } from "constants";
-import { getCommunicationDirPath, getRequestPath, getResponsePath, getSignalDirPath } from "./paths";
+import {
+  getCommunicationDirPath,
+  getRequestPath,
+  getResponsePath,
+  getSignalDirPath,
+} from "./paths";
 import { userInfo } from "os";
-import { RuntimeAdapter} from "./runtimeAdapter";
+import { Io } from "./io";
 import { FileHandle, open, readFile, stat } from "fs/promises";
 import { VSCODE_COMMAND_TIMEOUT_MS } from "./constants";
 import { Request, Response } from "./types";
@@ -31,7 +36,7 @@ class InboundSignal {
   }
 }
 
-export class NativeAdapter implements RuntimeAdapter {
+export class NativeIo implements Io {
   private responseFile: FileHandle | null;
 
   constructor() {
@@ -49,13 +54,15 @@ export class NativeAdapter implements RuntimeAdapter {
     const info = userInfo();
 
     if (
-	!stats.isDirectory() ||
-	stats.isSymbolicLink() ||
-	stats.mode & S_IWOTH ||
-	// On Windows, uid < 0, so we don't worry about it for simplicity
-	(info.uid >= 0 && stats.uid !== info.uid)
-	) {
-      throw new Error(`Refusing to proceed because of invalid communication dir ${communicationDirPath}`);
+      !stats.isDirectory() ||
+      stats.isSymbolicLink() ||
+      stats.mode & S_IWOTH ||
+      // On Windows, uid < 0, so we don't worry about it for simplicity
+      (info.uid >= 0 && stats.uid !== info.uid)
+    ) {
+      throw new Error(
+        `Refusing to proceed because of invalid communication dir ${communicationDirPath}`
+      );
     }
   }
 
@@ -84,9 +91,12 @@ export class NativeAdapter implements RuntimeAdapter {
     const stats = await stat(requestPath);
     const request = JSON.parse(await readFile(requestPath, "utf-8"));
 
-    if (Math.abs(stats.mtimeMs - new Date().getTime()) >
-	VSCODE_COMMAND_TIMEOUT_MS) {
-      throw new Error("Request file is older than timeout; refusing to execute command");
+    if (
+      Math.abs(stats.mtimeMs - new Date().getTime()) > VSCODE_COMMAND_TIMEOUT_MS
+    ) {
+      throw new Error(
+        "Request file is older than timeout; refusing to execute command"
+      );
     }
 
     return request;

@@ -1,4 +1,4 @@
-import {Request, Response} from "./types";
+import { Request, Response } from "./types";
 
 export interface SignalReader {
   /**
@@ -11,7 +11,7 @@ export interface SignalReader {
   getVersion: () => Promise<string | null>;
 }
 
-export interface RuntimeAdapter {
+export interface Io {
   initialize: () => Promise<void>;
   // Prepares to send a response to readRequest, preventing any other process
   // from doing so until closeResponse is called.  Throws an error if called
@@ -21,9 +21,9 @@ export interface RuntimeAdapter {
   // readRequest. Throws an error if the prepareResponse has not been called.
   closeResponse: () => Promise<void>;
   // Returns a request from Talon command client.
-  readRequest: () => Promise<Request> ;
+  readRequest: () => Promise<Request>;
   // Writes a response. Throws an error if prepareResponse has not been called.
-  writeResponse: (response: Response)=>Promise<void>;
+  writeResponse: (response: Response) => Promise<void>;
   // Returns a SignalReader.
   getInboundSignal: (name: string) => SignalReader;
 }
