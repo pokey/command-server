@@ -43,7 +43,7 @@ export class NativeIo implements Io {
     this.responseFile = null;
   }
 
-  initialize(): Promise<void> {
+  async initialize(): Promise<void> {
     const communicationDirPath = getCommunicationDirPath();
 
     console.debug(`Creating communication dir ${communicationDirPath}`);
@@ -77,7 +77,8 @@ export class NativeIo implements Io {
     if (!this.responseFile) {
       throw new Error("response is not locked");
     }
-    return this.responseFile.close();
+    await this.responseFile.close();
+    this.responseFile = null;
   }
 
   /**
