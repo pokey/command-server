@@ -1,36 +1,29 @@
-import { FileHandle, readFile, stat } from "fs/promises";
-import { VSCODE_COMMAND_TIMEOUT_MS } from "./constants";
-import { getRequestPath } from "./paths";
 import { Request, Response } from "./types";
-import { writeJSON } from "./fileUtils";
 
-/**
- * Reads the JSON-encoded request from the request file, unlinking the file
- * after reading.
- * @returns A promise that resolves to a Response object
- */
-export async function readRequest(): Promise<Request> {
-  const requestPath = getRequestPath();
-
-  const stats = await stat(requestPath);
-  const request = JSON.parse(await readFile(requestPath, "utf-8"));
-
-  if (
-    Math.abs(stats.mtimeMs - new Date().getTime()) > VSCODE_COMMAND_TIMEOUT_MS
-  ) {
-    throw new Error(
-      "Request file is older than timeout; refusing to execute command"
-    );
-  }
-
-  return request;
+export interface SignalReader {
+  /**
+   * Gets the current version of the signal. This version string changes every
+   * time the signal is emitted, and can be used to detect whether signal has
+   * been emitted between two timepoints.
+   * @returns The current signal version or null if the signal file could not be
+   * found
+   */
+  getVersion: () => Promise<string | null>;
 }
 
-/**
- * Writes the response to the response file as JSON.
- * @param file The file to write to
- * @param response The response object to JSON-encode and write to disk
- */
-export async function writeResponse(file: FileHandle, response: Response) {
-  await writeJSON(file, response);
+export interface Io {
+  initialize: () => Promise<void>;
+  // Prepares to send a response to readRequest, preventing any other process
+  // from doing so until closeResponse is called.  Throws an error if called
+  // twice before closeResponse.
+  prepareResponse: () => Promise<void>;
+  // Closes a prepared response, allowing other processes to respond to
+  // readRequest. Throws an error if the prepareResponse has not been called.
+  closeResponse: () => Promise<void>;
+  // Returns a request from Talon command client.
+  readRequest: () => Promise<Request>;
+  // Writes a response. Throws an error if prepareResponse has not been called.
+  writeResponse: (response: Response) => Promise<void>;
+  // Returns a SignalReader.
+  getInboundSignal: (name: string) => SignalReader;
 }

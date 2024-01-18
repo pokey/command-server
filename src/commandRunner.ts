@@ -1,18 +1,16 @@
-import { open } from "fs/promises";
 import { Minimatch } from "minimatch";
 import * as vscode from "vscode";
 
-import { readRequest, writeResponse } from "./io";
-import { getResponsePath } from "./paths";
 import { any } from "./regex";
 import { Request } from "./types";
+import { Io } from "./io";
 
 export default class CommandRunner {
-  allowRegex!: RegExp;
-  denyRegex!: RegExp | null;
-  backgroundWindowProtection!: boolean;
+  private allowRegex!: RegExp;
+  private denyRegex!: RegExp | null;
+  private backgroundWindowProtection!: boolean;
 
-  constructor() {
+  constructor(private io: Io) {
     this.reloadConfiguration = this.reloadConfiguration.bind(this);
     this.runCommand = this.runCommand.bind(this);
 
@@ -51,14 +49,14 @@ export default class CommandRunner {
    * types.
    */
   async runCommand() {
-    const responseFile = await open(getResponsePath(), "wx");
+    await this.io.prepareResponse();
 
     let request: Request;
 
     try {
-      request = await readRequest();
+      request = await this.io.readRequest();
     } catch (err) {
-      await responseFile.close();
+      await this.io.closeResponse();
       throw err;
     }
 
@@ -94,20 +92,20 @@ export default class CommandRunner {
         await commandPromise;
       }
 
-      await writeResponse(responseFile, {
+      await this.io.writeResponse({
         error: null,
         uuid,
         returnValue: commandReturnValue,
         warnings,
       });
     } catch (err) {
-      await writeResponse(responseFile, {
+      await this.io.writeResponse({
         error: (err as Error).message,
         uuid,
         warnings,
       });
     }
 
-    await responseFile.close();
+    await this.io.closeResponse();
   }
 }
