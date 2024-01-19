@@ -1,4 +1,4 @@
-import { tmpdir, userInfo } from "os";
+import { tmpdir, userInfo, homedir } from "os";
 import { join } from "path";
 
 export function getCommunicationDirPath() {
@@ -8,7 +8,17 @@ export function getCommunicationDirPath() {
   // bother with a suffix
   const suffix = info.uid >= 0 ? `-${info.uid}` : "";
 
-  return join(tmpdir(), `vscode-command-server${suffix}`);
+  // NB: See https://github.com/talonhub/community/issues/966 for why we do
+  // per-os directories
+  if (process.platform === "win32") {
+    return join(`${homedir()}\\AppData\\Roaming\\talon\\`, `vscode-command-server${suffix}`);
+  }
+  else if (process.platform === "darwin" || process.platform === "linux") {
+    return join("/tmp/", `vscode-command-server${suffix}`);
+  }
+  else {
+    return join(tmpdir(), `vscode-command-server${suffix}`);
+  }
 }
 
 export function getSignalDirPath(): string {
