@@ -25,7 +25,7 @@
 
               buildPhase = ''
                 # yarn tries to create a .yarn file in $HOME. There's probably a
-                # better way to fix this but setting HOME to TMPDIR works for now.
+                # better way to fix this but setting HOME to cwd works for now.
                 export HOME="."
                 yarn --offline run compile
                 # non-existent symlink errors during packaging
