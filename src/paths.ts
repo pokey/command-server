@@ -2,22 +2,18 @@ import { tmpdir, userInfo, homedir } from "os";
 import { join } from "path";
 
 export function getCommunicationDirPath() {
-  const info = userInfo();
-
-  // NB: On Windows, uid < 0, and the tmpdir is user-specific, so we don't
-  // bother with a suffix
-  const suffix = info.uid >= 0 ? `-${info.uid}` : "";
 
   // NB: See https://github.com/talonhub/community/issues/966 for why we do
   // per-os directories
   if (process.platform === "win32") {
-    return join(`${homedir()}\\AppData\\Roaming\\talon\\`, `vscode-command-server${suffix}`);
+    return join(`${homedir()}\\AppData\\Roaming\\talon\\`, `vscode-command-server}`);
   }
   else if (process.platform === "darwin" || process.platform === "linux") {
-    return join("/tmp", `vscode-command-server${suffix}`);
+    const info = userInfo();
+    return join("/tmp", `vscode-command-server-${info.uid}`);
   }
   else {
-    return join(tmpdir(), `vscode-command-server${suffix}`);
+    throw new Error(`Unsupported platform: ${process.platform}`);
   }
 }
 
