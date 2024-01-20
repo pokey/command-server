@@ -14,7 +14,7 @@ export function getCommunicationDirPath() {
     return join(`${homedir()}\\AppData\\Roaming\\talon\\`, `vscode-command-server${suffix}`);
   }
   else if (process.platform === "darwin" || process.platform === "linux") {
-    return join("/tmp/", `vscode-command-server${suffix}`);
+    return join("/tmp", `vscode-command-server${suffix}`);
   }
   else {
     return join(tmpdir(), `vscode-command-server${suffix}`);
