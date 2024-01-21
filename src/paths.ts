@@ -1,4 +1,4 @@
-import { tmpdir, userInfo, homedir } from "os";
+import { homedir } from "os";
 import { join } from "path";
 
 export function getCommunicationDirPath() {
@@ -9,8 +9,7 @@ export function getCommunicationDirPath() {
     return join(`${homedir()}\\AppData\\Roaming\\talon\\`, `vscode-command-server}`);
   }
   else if (process.platform === "darwin" || process.platform === "linux") {
-    const info = userInfo();
-    return join("/tmp", `vscode-command-server-${info.uid}`);
+    return join(homedir(), `/.talon/.comms/vscode-command-server`);
   }
   else {
     throw new Error(`Unsupported platform: ${process.platform}`);
