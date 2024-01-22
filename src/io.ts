@@ -12,18 +12,18 @@ export interface SignalReader {
 }
 
 export interface Io {
-  initialize: () => Promise<void>;
+  initialize(): Promise<void>;
   // Prepares to send a response to readRequest, preventing any other process
   // from doing so until closeResponse is called.  Throws an error if called
   // twice before closeResponse.
-  prepareResponse: () => Promise<void>;
+  prepareResponse(): Promise<void>;
   // Closes a prepared response, allowing other processes to respond to
   // readRequest. Throws an error if the prepareResponse has not been called.
-  closeResponse: () => Promise<void>;
+  closeResponse(): Promise<void>;
   // Returns a request from Talon command client.
-  readRequest: () => Promise<Request>;
+  readRequest(): Promise<Request>;
   // Writes a response. Throws an error if prepareResponse has not been called.
-  writeResponse: (response: Response) => Promise<void>;
+  writeResponse(response: Response): Promise<void>;
   // Returns a SignalReader.
-  getInboundSignal: (name: string) => SignalReader;
+  getInboundSignal(name: string): SignalReader;
 }
