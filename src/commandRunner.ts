@@ -49,18 +49,16 @@ export default class CommandRunner {
    * types.
    */
   async runCommand() {
+    await this.io.prepareResponse();
 
     let request: Request;
 
     try {
       request = await this.io.readRequest();
     } catch (err) {
+      await this.io.closeResponse();
       throw err;
     }
-
-    // This must wait until after we know if the client is using deprecated folder
-    await this.io.prepareResponse();
-
 
     const { commandId, args, uuid, returnCommandOutput, waitForFinish } =
       request;
