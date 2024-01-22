@@ -3,9 +3,12 @@ import { join } from "path";
 import { S_IWOTH } from "constants";
 import {
   getCommunicationDirPath,
+  getDeprecatedCommunicationDirPath,
   getRequestPath,
+  getDeprecatedRequestPath,
   getResponsePath,
   getSignalDirPath,
+  getDeprecatedSignalDirPath,
 } from "./paths";
 import { userInfo } from "os";
 import { Io } from "./io";
@@ -14,7 +17,7 @@ import { VSCODE_COMMAND_TIMEOUT_MS } from "./constants";
 import { Request, Response } from "./types";
 
 class InboundSignal {
-  constructor(private path: string) {}
+  constructor(private oldPath: string, private newPath: string) {}
 
   /**
    * Gets the current version of the signal. This version string changes every
@@ -25,32 +28,40 @@ class InboundSignal {
    */
   async getVersion() {
     try {
-      return (await stat(this.path)).mtimeMs.toString();
+      return (await stat(this.newPath)).mtimeMs.toString();
     } catch (err) {
       if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
         throw err;
       }
-
-      return null;
     }
+    try {
+      return (await stat(this.oldPath)).mtimeMs.toString();
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
+        throw err;
+      }
+    }
+    return null;
   }
 }
 
 export class NativeIo implements Io {
   private responseFile: FileHandle | null;
+  private isDeprecatedClient: boolean;
 
   constructor() {
     this.responseFile = null;
+    this.isDeprecatedClient = false;
   }
 
-  async initialize(): Promise<void> {
-    const communicationDirPath = getCommunicationDirPath();
+  async initializeFolder(dirPath: string): Promise<void> {
 
-    console.debug(`Creating communication dir ${communicationDirPath}`);
-    mkdirSync(communicationDirPath, { recursive: true, mode: 0o770 });
+    console.debug(
+      `Creating deprecated communication dir ${dirPath}`
+    );
+    mkdirSync(dirPath, { recursive: true, mode: 0o770 });
 
-    const stats = lstatSync(communicationDirPath);
-
+    const stats = lstatSync(dirPath);
     const info = userInfo();
 
     if (
@@ -61,16 +72,23 @@ export class NativeIo implements Io {
       (info.uid >= 0 && stats.uid !== info.uid)
     ) {
       throw new Error(
-        `Refusing to proceed because of invalid communication dir ${communicationDirPath}`
+        `Refusing to proceed because of invalid communication dir ${dirPath}`
       );
     }
+  }
+
+  async initialize(): Promise<void> {
+    const communicationDirPath = getCommunicationDirPath();
+    this.initializeFolder(communicationDirPath);
+    const deprecatedCommunicationDirPath = getDeprecatedCommunicationDirPath();
+    this.initializeFolder(deprecatedCommunicationDirPath);
   }
 
   async prepareResponse(): Promise<void> {
     if (this.responseFile) {
       throw new Error("response is already locked");
     }
-    this.responseFile = await open(getResponsePath(), "wx");
+    this.responseFile = await open(getResponsePath(this.isDeprecatedClient), "wx");
   }
 
   async closeResponse(): Promise<void> {
@@ -87,9 +105,18 @@ export class NativeIo implements Io {
    * @returns A promise that resolves to a Response object
    */
   async readRequest(): Promise<Request> {
-    const requestPath = getRequestPath();
+    var requestPath = getRequestPath();
+    var stats;
+    try {
+      stats = await stat(requestPath);
+      this.isDeprecatedClient = false;
+    }
+    catch (err) {
+      requestPath = getDeprecatedRequestPath();
+      stats = await stat(requestPath);
+      this.isDeprecatedClient = true;
+    }
 
-    const stats = await stat(requestPath);
     const request = JSON.parse(await readFile(requestPath, "utf-8"));
 
     if (
@@ -116,8 +143,12 @@ export class NativeIo implements Io {
   }
 
   getInboundSignal(name: string) {
-    const signalDir = getSignalDirPath();
-    const path = join(signalDir, name);
-    return new InboundSignal(path);
+    var signalDir = getSignalDirPath();
+    const newPath = join(signalDir, name);
+    signalDir = getDeprecatedSignalDirPath();
+    const oldPath = join(signalDir, name);
+
+    return new InboundSignal(newPath, oldPath);
   }
 }
+
