@@ -3,9 +3,10 @@ import * as vscode from "vscode";
 import { NativeIo } from "./nativeIo";
 import CommandRunner from "./commandRunner";
 import { FocusedElementType } from "./types";
+import { getCommunicationDirPath } from "./paths";
 
 export async function activate(context: vscode.ExtensionContext) {
-  const io = new NativeIo();
+  const io = new NativeIo(getCommunicationDirPath());
   await io.initialize();
 
   const commandRunner = new CommandRunner(io);

@@ -10,15 +10,3 @@ export function getCommunicationDirPath() {
 
   return join(tmpdir(), `vscode-command-server${suffix}`);
 }
-
-export function getSignalDirPath(): string {
-  return join(getCommunicationDirPath(), "signals");
-}
-
-export function getRequestPath() {
-  return join(getCommunicationDirPath(), "request.json");
-}
-
-export function getResponsePath() {
-  return join(getCommunicationDirPath(), "response.json");
-}
