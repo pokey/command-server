@@ -2,22 +2,18 @@ import { Io, SignalReader } from "./io";
 import { Request, Response } from "./types";
 
 class FallbackInboundSignal implements SignalReader {
-  private signalMap = new Map<Io, SignalReader>();
+  private signals: SignalReader[];
 
-  constructor(name: string, private ios: Io[]) {
-    this.signalMap = new Map();
-
-    for (const io of ios) {
-      this.signalMap.set(io, io.getInboundSignal(name));
-    }
+  constructor(name: string, ios: Io[]) {
+    this.signals = ios.map((io) => io.getInboundSignal(name));
   }
 
   async getVersion(): Promise<string | null> {
     let error: Error | undefined;
 
-    for (const io of this.ios) {
+    for (const signal of this.signals) {
       try {
-        const version = await this.signalMap.get(io)!.getVersion();
+        const version = await signal.getVersion();
         if (version != null) {
           return version;
         }
@@ -35,57 +31,94 @@ class FallbackInboundSignal implements SignalReader {
 }
 
 export class FallbackIo implements Io {
+  /** The {@link IO} from which we successfully read a request */
+  private activeIo: Io | null = null;
+
+  /**
+   * The index of the highest-priority IO that has had an active request.  If no IO
+   * has had an active request, this is integer max
+   */
+  private highestPriorityActiveIoIndex = Number.MAX_SAFE_INTEGER - 1;
+
   constructor(private ioList: Io[]) {}
 
-  async initialize(): Promise<void> {
-    for (const io of this.ioList) {
-      await io.initialize();
-    }
+  initialize(): Promise<void> {
+    return safeRunAll(this.ioList, (io) => io.initialize());
   }
 
-  async prepareResponse(): Promise<void> {
-    for (const io of this.ioList) {
-      await io.prepareResponse();
-    }
+  prepareResponse(): Promise<void> {
+    // As an optimization, remove all IOs after the highest-priority IO that has
+    // had an active request
+    this.ioList.splice(this.highestPriorityActiveIoIndex + 1);
+
+    return safeRunAll(this.ioList, (io) => io.prepareResponse());
   }
 
-  async closeResponse(): Promise<void> {
-    for (const io of this.ioList) {
-      await io.closeResponse();
-    }
+  closeResponse(): Promise<void> {
+    return safeRunAll(this.ioList, (io) => io.closeResponse());
   }
 
   async readRequest(): Promise<Request> {
-    let error: Error | undefined;
+    // Note that unlike the methods above, we stop after the first successful
+    // read because only one IO should be successful
+
+    /** The error from the highest priority IO */
+    let firstError: Error | undefined;
 
     for (let i = 0; i < this.ioList.length; i++) {
       const io = this.ioList[i];
       try {
         const request = await io.readRequest();
-
-        // Remove any lower priority IOs, because we now know that this IO
-        // is active.
-        for (let j = i + 1; j < this.ioList.length; j++) {
-          await this.ioList[j].closeResponse();
-        }
-        this.ioList.splice(i + 1);
-
+        this.activeIo = io;
+        this.highestPriorityActiveIoIndex = i;
         return request;
       } catch (err) {
-        error ??= err as Error;
+        firstError ??= err as Error;
       }
     }
 
-    throw error;
+    throw firstError;
   }
 
   async writeResponse(response: Response): Promise<void> {
-    for (const io of this.ioList) {
-      await io.writeResponse(response);
+    if (this.activeIo == null) {
+      throw new Error("No active IO; this shouldn't happen");
     }
+    // Only respond to the IO that had the active request
+    await this.activeIo.writeResponse(response);
+    this.activeIo = null;
   }
 
   getInboundSignal(name: string): SignalReader {
     return new FallbackInboundSignal(name, this.ioList);
+  }
+}
+
+/**
+ * Calls {@link fn} for each item in {@link items}, catching any errors and
+ * throwing the first one after all items have been processed if none of them
+ * succeeded.
+ *
+ * @param items The items to iterate over
+ * @param fn The function to call for each item
+ */
+async function safeRunAll<T>(
+  items: T[],
+  fn: (item: T) => Promise<void>
+): Promise<void> {
+  let firstError: Error | undefined;
+  let success = false;
+
+  for (const item of items) {
+    try {
+      await fn(item);
+      success = true;
+    } catch (err) {
+      firstError ??= err as Error;
+    }
+  }
+
+  if (!success) {
+    throw firstError;
   }
 }
