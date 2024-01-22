@@ -7,6 +7,8 @@ import { VSCODE_COMMAND_TIMEOUT_MS } from "./constants";
 import { Io } from "./io";
 import { Request, Response } from "./types";
 
+const MAX_SIGNAL_VERSION_AGE_MS = 60 * 1000;
+
 class InboundSignal {
   constructor(private path: string) {}
 
@@ -19,7 +21,15 @@ class InboundSignal {
    */
   async getVersion() {
     try {
-      return (await stat(this.path)).mtimeMs.toString();
+      const { mtimeMs } = await stat(this.path);
+
+      if (
+        Math.abs(mtimeMs - new Date().getTime()) > MAX_SIGNAL_VERSION_AGE_MS
+      ) {
+        return null;
+      }
+
+      return mtimeMs.toString();
     } catch (err) {
       if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
         throw err;
