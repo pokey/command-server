@@ -57,7 +57,7 @@ export class NativeIo implements Io {
   async initializeFolder(dirPath: string): Promise<void> {
 
     console.debug(
-      `Creating deprecated communication dir ${dirPath}`
+      `Creating communication dir ${dirPath}`
     );
     mkdirSync(dirPath, { recursive: true, mode: 0o770 });
 
