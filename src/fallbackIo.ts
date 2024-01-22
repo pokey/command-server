@@ -30,6 +30,15 @@ class FallbackInboundSignal implements SignalReader {
   }
 }
 
+/**
+ * An {@link Io} that tries to read from multiple {@link Io}s in order until it
+ * finds one that works.  If none of them work, it throws the error from the
+ * highest-priority {@link Io}. For some methods, it stops after the highest
+ * priority {@link Io} that succeeds; for other methods it runs all of them.
+ *
+ * As an optimization, it removes all {@link Io}s after the highest-priority
+ * {@link Io} that has had an active request.
+ */
 export class FallbackIo implements Io {
   /** The {@link IO} from which we successfully read a request */
   private activeIo: Io | null = null;
