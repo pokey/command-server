@@ -1,4 +1,4 @@
-import { getCommunicationDirPath } from "./paths";
+import { getCommunicationDirPath } from "./getCommunicationDirPath";
 import { sync as rimrafSync } from "rimraf";
 
 function main() {

@@ -4,7 +4,7 @@ import CommandRunner from "./commandRunner";
 import { FallbackIo } from "./fallbackIo";
 import { getLegacyCommunicationDirPath } from "./legacyPaths";
 import { NativeIo } from "./nativeIo";
-import { getCommunicationDirPath } from "./paths";
+import { getCommunicationDirPath } from "./getCommunicationDirPath";
 import { FocusedElementType } from "./types";
 
 export async function activate(context: vscode.ExtensionContext) {
