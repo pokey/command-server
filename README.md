@@ -81,6 +81,18 @@ Allows user to specify the denied commands using glob syntax, eg:
 
 Defaults to `[]` (doesn't deny anything).
 
+## Building
+
+### Nix
+
+The extension can be built using the `flake.nix` file using the following command:
+
+```bash
+nix build
+```
+
+The resulting `.vsix` file will be placed in the `result/` folder.
+
 ## Troubleshooting
 
 ## Known issues
