@@ -65,6 +65,8 @@ export default class CommandRunner {
 
     const warnings = [];
 
+    let commandPromise: Thenable<unknown> | undefined;
+
     try {
       if (!vscode.window.state.focused) {
         if (this.backgroundWindowProtection) {
@@ -82,7 +84,7 @@ export default class CommandRunner {
         throw new Error("Command in denyList");
       }
 
-      const commandPromise = vscode.commands.executeCommand(commandId, ...args);
+      commandPromise = vscode.commands.executeCommand(commandId, ...args);
 
       let commandReturnValue = null;
 
@@ -107,5 +109,9 @@ export default class CommandRunner {
     }
 
     await this.io.closeResponse();
+
+    if (commandPromise != null) {
+      await commandPromise;
+    }
   }
 }

@@ -14,14 +14,15 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand(
       "command-server.runCommand",
-      (focusedElementType_?: FocusedElementType) => {
+      async (focusedElementType_: FocusedElementType) => {
         focusedElementType = focusedElementType_;
-        return commandRunner.runCommand();
+        await commandRunner.runCommand();
+        focusedElementType = undefined;
       }
     ),
     vscode.commands.registerCommand(
       "command-server.getFocusedElementType",
-      () => focusedElementType ?? null
+      () => focusedElementType
     )
   );
 
