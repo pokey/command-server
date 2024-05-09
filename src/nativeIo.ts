@@ -1,17 +1,13 @@
-import { mkdirSync, lstatSync } from "fs";
-import { join } from "path";
 import { S_IWOTH } from "constants";
-import {
-  getCommunicationDirPath,
-  getRequestPath,
-  getResponsePath,
-  getSignalDirPath,
-} from "./paths";
-import { userInfo } from "os";
-import { Io } from "./io";
+import { lstatSync, mkdirSync } from "fs";
 import { FileHandle, open, readFile, stat } from "fs/promises";
+import { userInfo } from "os";
+import { join } from "path";
 import { VSCODE_COMMAND_TIMEOUT_MS } from "./constants";
+import { Io } from "./io";
 import { Request, Response } from "./types";
+
+const MAX_SIGNAL_VERSION_AGE_MS = 60 * 1000;
 
 class InboundSignal {
   constructor(private path: string) {}
@@ -25,7 +21,15 @@ class InboundSignal {
    */
   async getVersion() {
     try {
-      return (await stat(this.path)).mtimeMs.toString();
+      const { mtimeMs } = await stat(this.path);
+
+      if (
+        Math.abs(mtimeMs - new Date().getTime()) > MAX_SIGNAL_VERSION_AGE_MS
+      ) {
+        return null;
+      }
+
+      return mtimeMs.toString();
     } catch (err) {
       if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
         throw err;
@@ -38,18 +42,23 @@ class InboundSignal {
 
 export class NativeIo implements Io {
   private responseFile: FileHandle | null;
+  private signalDirPath: string;
+  private requestPath: string;
+  private responsePath: string;
 
-  constructor() {
+  constructor(private communicationDirPath: string) {
     this.responseFile = null;
+
+    this.signalDirPath = join(communicationDirPath, "signals");
+    this.requestPath = join(communicationDirPath, "request.json");
+    this.responsePath = join(communicationDirPath, "response.json");
   }
 
   async initialize(): Promise<void> {
-    const communicationDirPath = getCommunicationDirPath();
+    console.debug(`Creating communication dir ${this.communicationDirPath}`);
+    mkdirSync(this.communicationDirPath, { recursive: true, mode: 0o770 });
 
-    console.debug(`Creating communication dir ${communicationDirPath}`);
-    mkdirSync(communicationDirPath, { recursive: true, mode: 0o770 });
-
-    const stats = lstatSync(communicationDirPath);
+    const stats = lstatSync(this.communicationDirPath);
 
     const info = userInfo();
 
@@ -61,7 +70,7 @@ export class NativeIo implements Io {
       (info.uid >= 0 && stats.uid !== info.uid)
     ) {
       throw new Error(
-        `Refusing to proceed because of invalid communication dir ${communicationDirPath}`
+        `Refusing to proceed because of invalid communication dir ${this.communicationDirPath}`
       );
     }
   }
@@ -70,7 +79,7 @@ export class NativeIo implements Io {
     if (this.responseFile) {
       throw new Error("response is already locked");
     }
-    this.responseFile = await open(getResponsePath(), "wx");
+    this.responseFile = await open(this.responsePath, "wx");
   }
 
   async closeResponse(): Promise<void> {
@@ -86,10 +95,8 @@ export class NativeIo implements Io {
    * @returns A promise that resolves to a Response object
    */
   async readRequest(): Promise<Request> {
-    const requestPath = getRequestPath();
-
-    const stats = await stat(requestPath);
-    const request = JSON.parse(await readFile(requestPath, "utf-8"));
+    const stats = await stat(this.requestPath);
+    const request = JSON.parse(await readFile(this.requestPath, "utf-8"));
 
     if (
       Math.abs(stats.mtimeMs - new Date().getTime()) > VSCODE_COMMAND_TIMEOUT_MS
@@ -115,7 +122,7 @@ export class NativeIo implements Io {
   }
 
   getInboundSignal(name: string) {
-    const signalDir = getSignalDirPath();
+    const signalDir = this.signalDirPath;
     const path = join(signalDir, name);
     return new InboundSignal(path);
   }

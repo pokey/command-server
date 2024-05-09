@@ -1,11 +1,17 @@
 import * as vscode from "vscode";
 
-import { NativeIo } from "./nativeIo";
 import CommandRunner from "./commandRunner";
+import { FallbackIo } from "./fallbackIo";
+import { getLegacyCommunicationDirPath } from "./legacyPaths";
+import { NativeIo } from "./nativeIo";
+import { getCommunicationDirPath } from "./getCommunicationDirPath";
 import { FocusedElementType } from "./types";
 
 export async function activate(context: vscode.ExtensionContext) {
-  const io = new NativeIo();
+  const io = new FallbackIo([
+    new NativeIo(getCommunicationDirPath()),
+    new NativeIo(getLegacyCommunicationDirPath()),
+  ]);
   await io.initialize();
 
   const commandRunner = new CommandRunner(io);
