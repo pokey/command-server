@@ -51,7 +51,7 @@ export default class CommandRunner {
      * types.
      */
     async runCommand() {
-        this.rpc.executeRequest(({ commandId, args }) => {
+        await this.rpc.executeRequest(({ commandId, args }) => {
             if (!vscode.window.state.focused) {
                 if (this.backgroundWindowProtection) {
                     throw new Error("This editor is not active");
