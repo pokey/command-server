@@ -82,8 +82,7 @@ export class NativeIo implements Io {
   }
 
   /**
-   * Reads the JSON-encoded request from the request file, unlinking the file
-   * after reading.
+   * Reads the JSON-encoded request from the request file
    * @returns A promise that resolves to a Response object
    */
   async readRequest(): Promise<Request> {
