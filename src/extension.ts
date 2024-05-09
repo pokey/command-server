@@ -1,9 +1,14 @@
 import * as vscode from "vscode";
 import CommandRunner from "./commandRunner";
+import {
+    getCommunicationDirPath,
+    initializeCommunicationDir,
+} from "./rpcServer";
 import { getInboundSignal } from "./signal";
 import { FocusedElementType } from "./types";
 
 export async function activate(context: vscode.ExtensionContext) {
+    initializeCommunicationDir(getCommunicationDirPath());
     const commandRunner = new CommandRunner();
     let focusedElementType: FocusedElementType | undefined;
 
