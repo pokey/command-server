@@ -1,7 +1,12 @@
 import { join } from "path";
-import { getCommunicationDirPath } from "./rpcServer";
+import { calculateCommunicationDirPath } from "./rpcServer";
 
-const signalDir = join(getCommunicationDirPath(), "signals");
+const comDir = calculateCommunicationDirPath("vscode-command-server");
+const signalDir = join(comDir, "signals");
+
+export function getCommunicationDirPath(): string {
+    return comDir;
+}
 
 export function getSignalDirPath(): string {
     return signalDir;

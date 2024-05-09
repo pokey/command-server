@@ -1,9 +1,7 @@
 import * as vscode from "vscode";
 import CommandRunner from "./commandRunner";
-import {
-    getCommunicationDirPath,
-    initializeCommunicationDir,
-} from "./rpcServer";
+import { getCommunicationDirPath } from "./paths";
+import { initializeCommunicationDir } from "./rpcServer";
 import { getInboundSignal } from "./signal";
 import { FocusedElementType } from "./types";
 

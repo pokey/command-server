@@ -1,7 +1,8 @@
 import { Minimatch } from "minimatch";
 import * as vscode from "vscode";
+import { getCommunicationDirPath } from "./paths";
 import { any } from "./regex";
-import { RpcServer, getCommunicationDirPath } from "./rpcServer";
+import { RpcServer } from "./rpcServer";
 import type { Payload } from "./types";
 
 export default class CommandRunner {
