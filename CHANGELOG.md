@@ -2,6 +2,10 @@
 
 All notable changes to the `command-server` extension will be documented in this file.
 
+## [0.10.0](https://github.com/pokey/cursorless-vscode/tree/0.10.0) (2024-04-23)
+
+- Make `getFocusedElementType` async [#24](https://github.com/pokey/command-server/pull/24) ([@saidelike](https://github.com/saidelike))
+
 ## [0.8.1](https://github.com/pokey/cursorless-vscode/tree/0.8.0) (2021-12-06)
 
 - Pre-phrase signal [\#10](https://github.com/pokey/command-server/pull/10) ([pokey](https://github.com/pokey))

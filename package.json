@@ -8,7 +8,7 @@
     "type": "git",
     "url": "https://github.com/pokey/command-server"
   },
-  "version": "0.9.0",
+  "version": "0.10.1",
   "engines": {
     "vscode": "^1.53.0"
   },
@@ -47,12 +47,14 @@
       {
         "command": "command-server.runCommand",
         "key": "ctrl+shift+f17",
-        "mac": "cmd+shift+f17"
+        "mac": "cmd+shift+f17",
+        "args": "other"
       },
       {
         "command": "command-server.runCommand",
         "key": "ctrl+shift+alt+p",
-        "mac": "cmd+shift+alt+p"
+        "mac": "cmd+shift+alt+p",
+        "args": "other"
       },
       {
         "command": "command-server.runCommand",

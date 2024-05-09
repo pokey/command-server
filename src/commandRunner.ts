@@ -1,20 +1,19 @@
 import { Minimatch } from "minimatch";
 import * as vscode from "vscode";
-import { getCommunicationDirPath } from "./paths";
 import { any } from "./regex";
 import { RpcServer } from "./rpcServer";
 import type { Payload } from "./types";
 
 export default class CommandRunner {
-    allowRegex!: RegExp;
-    denyRegex!: RegExp | null;
-    backgroundWindowProtection!: boolean;
-    rpc: RpcServer<Payload>;
+    private allowRegex!: RegExp;
+    private denyRegex!: RegExp | null;
+    private backgroundWindowProtection!: boolean;
+    private rpc: RpcServer<Payload>;
 
-    constructor() {
+    constructor(dir: string) {
         this.reloadConfiguration = this.reloadConfiguration.bind(this);
         this.runCommand = this.runCommand.bind(this);
-        this.rpc = new RpcServer<Payload>(getCommunicationDirPath());
+        this.rpc = new RpcServer<Payload>(dir);
 
         this.reloadConfiguration();
         vscode.workspace.onDidChangeConfiguration(this.reloadConfiguration);
