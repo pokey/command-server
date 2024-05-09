@@ -12,7 +12,6 @@ export class RpcServer<T> {
     constructor(private dirPath: string) {
         this.requestPath = path.join(this.dirPath, "request.json");
         this.responsePath = path.join(this.dirPath, "response.json");
-        initializeCommunicationDir(this.dirPath);
     }
 
     async executeRequest(callback: (payload: T) => unknown) {
