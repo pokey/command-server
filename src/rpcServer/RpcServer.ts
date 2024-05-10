@@ -47,15 +47,15 @@ export class RpcServer<T> {
 
             await writeResponse(responseFile, {
                 uuid,
-                returnValue: commandReturnValue,
-                error: null,
                 warnings,
+                error: null,
+                returnValue: commandReturnValue,
             });
         } catch (err) {
             await writeResponse(responseFile, {
                 uuid,
-                error: (err as Error).message,
                 warnings,
+                error: (err as Error).message,
             });
         }
 
