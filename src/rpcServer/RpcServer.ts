@@ -8,13 +8,15 @@ import { upgradeRequest } from "./upgradeRequest";
 export class RpcServer<T> {
     private requestPath: string;
     private responsePath: string;
+    private callback: (payload: T) => unknown;
 
-    constructor(private dirPath: string) {
+    constructor(private dirPath: string, callback: (payload: T) => unknown) {
         this.requestPath = path.join(this.dirPath, "request.json");
         this.responsePath = path.join(this.dirPath, "response.json");
+        this.callback = callback;
     }
 
-    async executeRequest(callback: (payload: T) => unknown) {
+    async executeRequest() {
         const responseFile = await fs.open(this.requestPath, "wx");
 
         let request: RequestLatest;
@@ -33,7 +35,7 @@ export class RpcServer<T> {
         const warnings: string[] = [];
 
         try {
-            const commandPromise = Promise.resolve(callback(payload as T));
+            const commandPromise = Promise.resolve(this.callback(payload as T));
 
             let commandReturnValue = null;
 

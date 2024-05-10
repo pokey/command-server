@@ -1,3 +1,3 @@
 export * from "./RpcServer";
-export * from "./calculateCommunicationDirPath";
+export * from "./getCommunicationDirPath";
 export * from "./initializeCommunicationDir";

@@ -14,7 +14,12 @@ export default class CommandRunner {
     constructor() {
         this.reloadConfiguration = this.reloadConfiguration.bind(this);
         this.runCommand = this.runCommand.bind(this);
-        this.rpc = new RpcServer<Payload>(getCommunicationDirPath());
+        this.executeRequest = this.executeRequest.bind(this);
+
+        this.rpc = new RpcServer<Payload>(
+            getCommunicationDirPath(),
+            this.executeRequest
+        );
 
         this.reloadConfiguration();
         vscode.workspace.onDidChangeConfiguration(this.reloadConfiguration);
@@ -50,27 +55,29 @@ export default class CommandRunner {
      * output to response file.  See also documentation for Request / Response
      * types.
      */
-    async runCommand() {
-        await this.rpc.executeRequest(({ commandId, args }) => {
-            if (!vscode.window.state.focused) {
-                if (this.backgroundWindowProtection) {
-                    throw new Error("This editor is not active");
-                } else {
-                    // TODO: How should we handle this?
-                    // warnings.push("This editor is not active");
-                    console.warn("This editor is not active");
-                }
-            }
+    runCommand(): Promise<void> {
+        return this.rpc.executeRequest();
+    }
 
-            if (!commandId.match(this.allowRegex)) {
-                throw new Error("Command not in allowList");
+    private async executeRequest({ commandId, args }: Payload) {
+        if (!vscode.window.state.focused) {
+            if (this.backgroundWindowProtection) {
+                throw new Error("This editor is not active");
+            } else {
+                // TODO: How should we handle this?
+                // warnings.push("This editor is not active");
+                console.warn("This editor is not active");
             }
+        }
 
-            if (this.denyRegex != null && commandId.match(this.denyRegex)) {
-                throw new Error("Command in denyList");
-            }
+        if (!commandId.match(this.allowRegex)) {
+            throw new Error("Command not in allowList");
+        }
 
-            return vscode.commands.executeCommand(commandId, ...args);
-        });
+        if (this.denyRegex != null && commandId.match(this.denyRegex)) {
+            throw new Error("Command in denyList");
+        }
+
+        return vscode.commands.executeCommand(commandId, ...args);
     }
 }
