@@ -1,16 +1,18 @@
 import * as fs from "fs/promises";
 import * as path from "path";
-import { initializeCommunicationDir } from "./initializeCommunicationDir";
 import { readRequest, writeResponse } from "./io";
-import type { RequestLatest } from "./types";
+import type { RequestCallbackOptions, RequestLatest } from "./types";
 import { upgradeRequest } from "./upgradeRequest";
 
 export class RpcServer<T> {
     private requestPath: string;
     private responsePath: string;
-    private callback: (payload: T) => unknown;
+    private callback: (payload: T, options: RequestCallbackOptions) => unknown;
 
-    constructor(private dirPath: string, callback: (payload: T) => unknown) {
+    constructor(
+        private dirPath: string,
+        callback: (payload: T, options: RequestCallbackOptions) => unknown
+    ) {
         this.requestPath = path.join(this.dirPath, "request.json");
         this.responsePath = path.join(this.dirPath, "response.json");
         this.callback = callback;
@@ -31,11 +33,17 @@ export class RpcServer<T> {
 
         const { uuid, returnCommandOutput, waitForFinish, payload } = request;
 
-        // TODO: Do we need this?
         const warnings: string[] = [];
 
+        const options: RequestCallbackOptions = {
+            warn: (text) => warnings.push(text),
+        };
+
         try {
-            const commandPromise = Promise.resolve(this.callback(payload as T));
+            // Wrap in promise resolve to handle both sync and async functions
+            const commandPromise = Promise.resolve(
+                this.callback(payload as T, options)
+            );
 
             let commandReturnValue = null;
 

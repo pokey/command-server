@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import { getCommunicationDirPath } from "./paths";
 import { any } from "./regex";
 import { RpcServer } from "./rpcServer";
+import type { RequestCallbackOptions } from "./rpcServer/types";
 import type { Payload } from "./types";
 
 export default class CommandRunner {
@@ -59,14 +60,15 @@ export default class CommandRunner {
         return this.rpc.executeRequest();
     }
 
-    private async executeRequest({ commandId, args }: Payload) {
+    private async executeRequest(
+        { commandId, args }: Payload,
+        options: RequestCallbackOptions
+    ) {
         if (!vscode.window.state.focused) {
             if (this.backgroundWindowProtection) {
                 throw new Error("This editor is not active");
             } else {
-                // TODO: How should we handle this?
-                // warnings.push("This editor is not active");
-                console.warn("This editor is not active");
+                options.warn("This editor is not active");
             }
         }
 

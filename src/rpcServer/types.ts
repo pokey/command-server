@@ -71,3 +71,7 @@ export interface Response {
      */
     warnings: string[];
 }
+
+export interface RequestCallbackOptions {
+    warn(text: string): void;
+}
