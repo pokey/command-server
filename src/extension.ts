@@ -1,14 +1,17 @@
 import * as vscode from "vscode";
 import CommandRunner from "./commandRunner";
 import { getCommunicationDirPath } from "./paths";
-import { initializeCommunicationDir } from "./rpcServer";
-import { getInboundSignal } from "./signal";
+import { FileSystemNode, RpcServerFs } from "./rpcServer";
+import type { VscodeCommandPayload } from "./types";
 import { FocusedElementType } from "./types";
 
 export async function activate(context: vscode.ExtensionContext) {
-    initializeCommunicationDir(getCommunicationDirPath());
-    const commandRunner = new CommandRunner();
+    const fileSystem = new FileSystemNode(getCommunicationDirPath());
+    const rpc = new RpcServerFs<VscodeCommandPayload>(fileSystem);
+    const commandRunner = new CommandRunner(rpc);
     let focusedElementType: FocusedElementType | undefined;
+
+    await fileSystem.initialize();
 
     context.subscriptions.push(
         vscode.commands.registerCommand(
@@ -40,7 +43,7 @@ export async function activate(context: vscode.ExtensionContext) {
              * This signal is emitted by the voice engine to indicate that a phrase has
              * just begun execution.
              */
-            prePhrase: getInboundSignal("prePhrase"),
+            prePhrase: rpc.getInboundSignal("prePhrase"),
         },
     };
 }

@@ -1,3 +1,4 @@
-export * from "./RpcServer";
+export * from "./RpcServerFs";
+export * from "./types";
 export * from "./getCommunicationDirPath";
-export * from "./initializeCommunicationDir";
+export * from "./FileSystemNode";

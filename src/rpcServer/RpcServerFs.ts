@@ -1,33 +1,26 @@
-import * as fs from "fs/promises";
-import * as path from "path";
-import { readRequest, writeResponse } from "./io";
-import type { RequestCallbackOptions, RequestLatest } from "./types";
+import type {
+    Callback,
+    FileSystem,
+    RequestCallbackOptions,
+    RequestLatest,
+    RpcServer,
+    SignalReader,
+} from "./types";
 import { upgradeRequest } from "./upgradeRequest";
 
-export class RpcServer<T> {
-    private requestPath: string;
-    private responsePath: string;
-    private callback: (payload: T, options: RequestCallbackOptions) => unknown;
+export class RpcServerFs<T> implements RpcServer<T> {
+    constructor(private fileSystem: FileSystem) {}
 
-    constructor(
-        private dirPath: string,
-        callback: (payload: T, options: RequestCallbackOptions) => unknown
-    ) {
-        this.requestPath = path.join(this.dirPath, "request.json");
-        this.responsePath = path.join(this.dirPath, "response.json");
-        this.callback = callback;
-    }
-
-    async executeRequest() {
-        const responseFile = await fs.open(this.requestPath, "wx");
+    async executeRequest(callback: Callback<T>) {
+        await this.fileSystem.prepareResponse();
 
         let request: RequestLatest;
 
         try {
-            const requestInput = await readRequest(this.requestPath);
+            const requestInput = await this.fileSystem.readRequest();
             request = upgradeRequest(requestInput);
         } catch (err) {
-            await responseFile.close();
+            await this.fileSystem.closeResponse();
             throw err;
         }
 
@@ -42,7 +35,7 @@ export class RpcServer<T> {
         try {
             // Wrap in promise resolve to handle both sync and async functions
             const commandPromise = Promise.resolve(
-                this.callback(payload as T, options)
+                callback(payload as T, options)
             );
 
             let commandReturnValue = null;
@@ -53,20 +46,24 @@ export class RpcServer<T> {
                 await commandPromise;
             }
 
-            await writeResponse(responseFile, {
+            await this.fileSystem.writeResponse({
                 uuid,
                 warnings,
                 error: null,
                 returnValue: commandReturnValue,
             });
         } catch (err) {
-            await writeResponse(responseFile, {
+            await this.fileSystem.writeResponse({
                 uuid,
                 warnings,
                 error: (err as Error).message,
             });
         }
 
-        await responseFile.close();
+        await this.fileSystem.closeResponse();
+    }
+
+    getInboundSignal(name: string): SignalReader {
+        return this.fileSystem.getInboundSignal(name);
     }
 }

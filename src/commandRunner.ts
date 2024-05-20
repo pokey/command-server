@@ -2,25 +2,20 @@ import { Minimatch } from "minimatch";
 import * as vscode from "vscode";
 import { getCommunicationDirPath } from "./paths";
 import { any } from "./regex";
-import { RpcServer } from "./rpcServer";
-import type { RequestCallbackOptions } from "./rpcServer/types";
-import type { Payload } from "./types";
+
+import type { RequestCallbackOptions, RpcServer } from "./rpcServer/types";
+import type { VscodeCommandPayload } from "./types";
+import { RpcServerFs } from "./rpcServer";
 
 export default class CommandRunner {
     private allowRegex!: RegExp;
     private denyRegex!: RegExp | null;
     private backgroundWindowProtection!: boolean;
-    private rpc: RpcServer<Payload>;
 
-    constructor() {
+    constructor(private rpc: RpcServer<VscodeCommandPayload>) {
         this.reloadConfiguration = this.reloadConfiguration.bind(this);
         this.runCommand = this.runCommand.bind(this);
         this.executeRequest = this.executeRequest.bind(this);
-
-        this.rpc = new RpcServer<Payload>(
-            getCommunicationDirPath(),
-            this.executeRequest
-        );
 
         this.reloadConfiguration();
         vscode.workspace.onDidChangeConfiguration(this.reloadConfiguration);
@@ -57,11 +52,11 @@ export default class CommandRunner {
      * types.
      */
     runCommand(): Promise<void> {
-        return this.rpc.executeRequest();
+        return this.rpc.executeRequest(this.executeRequest);
     }
 
     private async executeRequest(
-        { commandId, args }: Payload,
+        { commandId, args }: VscodeCommandPayload,
         options: RequestCallbackOptions
     ) {
         if (!vscode.window.state.focused) {

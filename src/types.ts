@@ -3,7 +3,7 @@
  */
 export type FocusedElementType = "textEditor" | "terminal" | "other";
 
-export interface Payload {
+export interface VscodeCommandPayload {
     /**
      * The id of the command to run
      */
