@@ -76,13 +76,13 @@ export interface RequestCallbackOptions {
     warn(text: string): void;
 }
 
-export type Callback<T> = (
+export type RequestCallback<T> = (
     payload: T,
     options: RequestCallbackOptions
 ) => unknown;
 
 export interface RpcServer<T> {
-    executeRequest: (callback: Callback<T>) => Promise<void>;
+    executeRequest: (callback: RequestCallback<T>) => Promise<void>;
     getInboundSignal: (name: string) => SignalReader;
 }
 

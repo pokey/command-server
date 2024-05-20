@@ -1,5 +1,5 @@
 import type {
-    Callback,
+    RequestCallback,
     FileSystem,
     RequestCallbackOptions,
     RequestLatest,
@@ -11,7 +11,7 @@ import { upgradeRequest } from "./upgradeRequest";
 export class RpcServerFs<T> implements RpcServer<T> {
     constructor(private fileSystem: FileSystem) {}
 
-    async executeRequest(callback: Callback<T>) {
+    async executeRequest(callback: RequestCallback<T>) {
         await this.fileSystem.prepareResponse();
 
         let request: RequestLatest;
