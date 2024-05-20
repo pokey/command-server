@@ -21,7 +21,7 @@ export default class CommandRunner {
         vscode.workspace.onDidChangeConfiguration(this.reloadConfiguration);
     }
 
-    reloadConfiguration() {
+    private reloadConfiguration() {
         const allowList = vscode.workspace
             .getConfiguration("command-server")
             .get<string[]>("allowList")!;
