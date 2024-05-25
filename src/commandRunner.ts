@@ -1,8 +1,6 @@
 import { Minimatch } from "minimatch";
 import * as vscode from "vscode";
-import { getCommunicationDirPath } from "./paths";
 import { any } from "./regex";
-
 import type { RequestCallbackOptions, RpcServer } from "./rpcServer/types";
 import type { VscodeCommandPayload } from "./types";
 
