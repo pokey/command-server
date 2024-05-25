@@ -5,7 +5,6 @@ import { any } from "./regex";
 
 import type { RequestCallbackOptions, RpcServer } from "./rpcServer/types";
 import type { VscodeCommandPayload } from "./types";
-import { RpcServerFs } from "./rpcServer";
 
 export default class CommandRunner {
     private allowRegex!: RegExp;
